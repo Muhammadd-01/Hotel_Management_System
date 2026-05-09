@@ -6,8 +6,9 @@ import StatusBadge from '../components/StatusBadge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
   HiOutlineKey, HiOutlineCalendar, HiOutlineCash, HiOutlineCheckCircle,
-  HiOutlineUsers, HiOutlineCog, HiOutlineStar, HiOutlineBell, HiOutlineWrench
+  HiOutlineUsers, HiOutlineCog, HiOutlineStar, HiOutlineBell
 } from 'react-icons/hi';
+import { HiOutlineWrench } from 'react-icons/hi2';
 
 // Charts ke liye color palette define karna
 const CHART_COLORS = ['#00C2A8', '#0A2A43', '#081F5C', '#6B7280'];

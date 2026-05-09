@@ -39,7 +39,7 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <div className="logo">
           <span className="logo-icon">🏨</span>
-          <h2>HotelPro</h2>
+          <h2>LuxuryStay</h2>
         </div>
       </div>
 
@@ -111,6 +111,9 @@ const Sidebar = () => {
             </NavLink>
             <NavLink to="/create-user" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <HiOutlineUserAdd className="nav-icon" /><span>Register Staff</span>
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <HiOutlineCog className="nav-icon" /><span>System Settings</span>
             </NavLink>
           </>
         )}

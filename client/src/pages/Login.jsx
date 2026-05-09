@@ -43,8 +43,8 @@ const Login = () => {
         <div className="login-brand">
           <div className="brand-content">
             <span className="brand-icon">🏨</span>
-            <h1>HotelPro HMS</h1>
-            <p>Smart & Automated Solution for Modern Hospitality Management.</p>
+            <h1>LuxuryStay HMS</h1>
+            <p>The Ultimate AI-Powered Solution for Luxury Hospitality Management.</p>
             <div className="brand-features">
               <div className="feature-item">✓ AI-Powered Room Search</div>
               <div className="feature-item">✓ Automated Billing & Tax</div>

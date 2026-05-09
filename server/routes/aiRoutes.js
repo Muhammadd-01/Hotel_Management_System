@@ -4,7 +4,7 @@ const router = express.Router();
 const { smartSearch } = require('../controllers/aiController');
 const { protect } = require('../middleware/auth');
 
-// POST /api/ai/smart-search - AI se room suggest karwao (protected)
-router.post('/smart-search', protect, smartSearch);
+// GET /api/ai/search - AI se room suggest karwao (protected)
+router.get('/search', protect, smartSearch);
 
 module.exports = router;

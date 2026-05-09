@@ -49,11 +49,11 @@ const createBooking = async (req, res) => {
 
 // @desc    Saari bookings ki list lana
 // @route   GET /api/bookings
-const getBookings = async (req, res) => {
+const getAllBookings = async (req, res) => {
   try {
-    // Bookings fetch karna aur "room" ka data bhi saath lana (Populate)
     const bookings = await Booking.find()
       .populate('room', 'roomNumber type price')
+      .populate('user', 'name email')
       .sort({ createdAt: -1 });
 
     res.json({ success: true, bookings });
@@ -62,33 +62,82 @@ const getBookings = async (req, res) => {
   }
 };
 
-// @desc    Booking ka status update karna (Check-out wagera)
-// @route   PUT /api/bookings/:id
-const updateBookingStatus = async (req, res) => {
+// @desc    Single booking detail
+// @route   GET /api/bookings/:id
+const getBookingById = async (req, res) => {
   try {
-    const { status } = req.body;
+    const booking = await Booking.findById(req.params.id)
+      .populate('room', 'roomNumber type price description')
+      .populate('user', 'name email');
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking nahi mili' });
+    }
+
+    res.json({ success: true, booking });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Booking detail lane mein masla hua' });
+  }
+};
+
+// @desc    Checkout process
+// @route   PUT /api/bookings/:id/checkout
+const checkoutBooking = async (req, res) => {
+  try {
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking nahi mili' });
     }
 
-    // Agar status "checked-out" ho raha hai, to room ko khali karo
-    if (status === 'checked-out') {
-      await Room.findByIdAndUpdate(booking.room, { status: 'Cleaning' });
+    if (booking.status === 'Checked-out') {
+      return res.status(400).json({ success: false, message: 'Yeh room pehle hi checkout ho chuka hai' });
     }
 
-    booking.status = status;
+    // Booking update
+    booking.status = 'Checked-out';
+    booking.actualCheckOut = Date.now();
     await booking.save();
 
-    res.json({ success: true, message: 'Status update ho gaya', booking });
+    // Room update - room ko safai ke liye mark karna
+    await Room.findByIdAndUpdate(booking.room, { status: 'Cleaning' });
+
+    res.json({ success: true, message: 'Checkout kamyabi se ho gaya. Room cleaning ke liye bhej diya gaya hai.' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Update mein error' });
+    res.status(500).json({ success: false, message: 'Checkout mein error aa gaya' });
+  }
+};
+
+// @desc    Booking cancel karna
+// @route   PUT /api/bookings/:id/cancel
+const cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking nahi mili' });
+    }
+
+    if (booking.status === 'Cancelled') {
+      return res.status(400).json({ success: false, message: 'Booking pehle hi cancel ho chuki hai' });
+    }
+
+    booking.status = 'Cancelled';
+    await booking.save();
+
+    // Room update - room ko wapis available karna
+    await Room.findByIdAndUpdate(booking.room, { status: 'Available' });
+
+    res.json({ success: true, message: 'Booking cancel kar di gayi hai' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Cancellation mein error aa gaya' });
   }
 };
 
 module.exports = {
   createBooking,
-  getBookings,
-  updateBookingStatus
+  getAllBookings,
+  getBookingById,
+  checkoutBooking,
+  cancelBooking
 };

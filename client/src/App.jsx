@@ -17,6 +17,7 @@ import Feedback from './pages/Feedback';
 import Services from './pages/Services';
 import StaffManagement from './pages/StaffManagement';
 import Notifications from './pages/Notifications';
+import Settings from './pages/Settings';
 
 // helper - protected route with layout wrap karo
 const ProtectedPage = ({ children }) => (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/notifications" element={<ProtectedPage><Notifications /></ProtectedPage>} />
           <Route path="/staff" element={<ProtectedPage><StaffManagement /></ProtectedPage>} />
           <Route path="/create-user" element={<ProtectedPage><CreateUser /></ProtectedPage>} />
+          <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>

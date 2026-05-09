@@ -43,7 +43,7 @@ const KEYWORD_MAP = {
 // POST /api/ai/smart-search - natural language se room suggest karo
 const smartSearch = async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query } = req.query;
 
     // agar query nahi di to error do
     if (!query || query.trim() === '') {
