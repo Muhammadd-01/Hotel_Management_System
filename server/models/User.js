@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema({
   // user ka role - admin ya staff
   role: {
     type: String,
-    enum: ['admin', 'staff'],
-    default: 'staff'
+    enum: ['admin', 'staff', 'guest'],
+    default: 'guest'
   }
 }, {
   // timestamps automatically createdAt aur updatedAt add karta hai

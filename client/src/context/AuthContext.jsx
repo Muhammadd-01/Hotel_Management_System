@@ -51,6 +51,18 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  // ============ SIGNUP FUNCTION ============
+  // yeh function naya guest account banata hai
+  const signup = async (name, email, password) => {
+    const res = await API.post('/auth/signup', { name, email, password });
+    if (res.data.success) {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+    }
+    return res.data;
+  };
+
   // ============ LOGOUT FUNCTION ============
   // yeh function user ko logout karta hai
   const logout = () => {
@@ -63,6 +75,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     login,
+    signup,
     logout,
     loading,
     isAdmin: user?.role === 'admin',

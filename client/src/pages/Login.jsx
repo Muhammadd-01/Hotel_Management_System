@@ -1,7 +1,8 @@
 // Login.jsx - Yeh app ka entry point hai jahan staff login karta hai
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API from '../services/api';
 
 const Login = () => {
@@ -11,6 +12,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   
   const { login } = useAuth(); // Auth context se login function lana
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   // ============ LOGIN SUBMIT KARNE KA LOGIC ============
@@ -20,13 +22,12 @@ const Login = () => {
     setError('');
 
     try {
-      // Backend API ko credentials bhejna
-      const res = await API.post('/auth/login', { email, password });
+      // Auth context wala login function use karein jo API call handle karta hai
+      const data = await login(email, password);
       
-      if (res.data.success) {
-        // Local storage aur context mein user data save karna
-        login(res.data.user, res.data.token);
+      if (data.success) {
         // Dashboard par bhej dena
+        addToast('Login Successful', `Welcome back, ${data.user.name}!`, 'success');
         navigate('/dashboard');
       }
     } catch (err) {
@@ -74,6 +75,10 @@ const Login = () => {
                 {loading ? 'Logging in...' : 'Sign In to Dashboard'}
               </button>
             </form>
+
+            <div className="login-footer">
+              <p>New Guest? <Link to="/register">Create an account</Link></p>
+            </div>
 
             <div className="demo-credentials">
               <p className="demo-title">Demo Credentials (testing ke liye):</p>

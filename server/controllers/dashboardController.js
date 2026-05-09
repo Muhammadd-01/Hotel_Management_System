@@ -46,13 +46,21 @@ const getStats = async (req, res) => {
     ]);
     const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
 
+    // Guest specific stats
+    let guestStats = {};
+    if (req.user.role === 'guest') {
+      guestStats.myBookingsCount = await Booking.countDocuments({ createdBy: req.user._id });
+      guestStats.myServicesCount = await Service.countDocuments({ handledBy: req.user._id });
+    }
+
     res.json({
       success: true,
       stats: {
         totalRooms, availableRooms, bookedRooms, cleaningRooms,
         totalBookings, activeBookings, completedBookings, totalRevenue,
         totalGuests, pendingMaintenance, pendingHousekeeping, pendingServices, averageRating,
-        recentBookings, roomsByType
+        recentBookings, roomsByType,
+        ...guestStats
       }
     });
   } catch (error) {

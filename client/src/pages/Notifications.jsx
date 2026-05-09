@@ -62,27 +62,22 @@ const Notifications = () => {
 
       <div className="notification-list">
         {notifications.length > 0 ? notifications.map((n) => (
-          <div key={n._id} className={`card notification-item ${!n.isRead ? 'unread' : ''}`} style={{
-            padding: '16px 20px', marginBottom: '12px',
-            borderLeft: n.isRead ? 'none' : '4px solid var(--accent)',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            background: n.isRead ? 'var(--card)' : 'rgba(0, 194, 168, 0.05)'
-          }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                <h3 style={{ margin: 0, fontSize: '1rem' }}>{n.title}</h3>
-                <span className={`status-badge badge-${n.type === 'alert' ? 'danger' : 'info'}`} style={{ fontSize: '0.7rem' }}>{n.type}</span>
+          <div key={n._id} className={`card notification-item glass-card ${!n.isRead ? 'unread-notif' : ''}`}>
+            <div className="notif-content">
+              <div className="notif-title-row">
+                <h3>{n.title}</h3>
+                <span className={`status-badge badge-${n.type === 'alert' ? 'danger' : 'info'}`}>{n.type}</span>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{n.message}</p>
-              <small className="text-muted">{new Date(n.createdAt).toLocaleString()}</small>
+              <p className="notif-message">{n.message}</p>
+              <small className="notif-time">{new Date(n.createdAt).toLocaleString()}</small>
             </div>
             
             <div className="action-buttons">
-              {!n.isRead && <button className="btn-icon" onClick={() => markAsRead(n._id)} title="Mark as read" style={{ color: 'var(--accent)' }}><HiCheck /></button>}
-              <button className="btn-icon" onClick={() => deleteNotification(n._id)} title="Delete" style={{ color: 'var(--error)' }}><HiTrash /></button>
+              {!n.isRead && <button className="btn-icon btn-success-light" onClick={() => markAsRead(n._id)} title="Mark as read"><HiCheck /></button>}
+              <button className="btn-icon btn-danger-light" onClick={() => deleteNotification(n._id)} title="Delete"><HiTrash /></button>
             </div>
           </div>
-        )) : <div className="card" style={{ padding: '40px', textAlign: 'center' }}><p className="text-muted">Koi notification nahi hai</p></div>}
+        )) : <div className="card glass-card empty-notif"><p className="text-muted">Koi notification nahi hai</p></div>}
       </div>
     </div>
   );

@@ -101,6 +101,46 @@ const register = async (req, res) => {
   }
 };
 
+// ============ GUEST SIGNUP (PUBLIC) ============
+// POST /api/auth/signup - naya guest account banata hai
+const signup = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai' });
+    }
+
+    // Create guest user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: 'guest' // Force guest role for public signup
+    });
+
+    // Token generate karo taake signup ke baad foran login ho jaye
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      message: 'Account kamyabi se ban gaya!',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ success: false, message: 'Signup mein error aa gaya' });
+  }
+};
+
 // ============ GET CURRENT USER ============
 // GET /api/auth/me - logged in user ki profile return karo
 const getMe = async (req, res) => {
@@ -125,4 +165,4 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { login, register, getMe };
+module.exports = { login, register, signup, getMe };

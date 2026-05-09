@@ -1,32 +1,37 @@
 /* index.css - yeh main stylesheet hai poori app ki */
-/* ============ CSS VARIABLES / COLOR PALETTE ============ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* ============ CSS VARIABLES / PREMIUM PALETTE ============ */
 :root {
-  --primary: #0A2A43;
-  --secondary: #081F5C;
-  --accent: #00C2A8;
-  --accent-hover: #00a892;
-  --bg: #F5F7FA;
+  --primary: #0F172A;
+  --secondary: #1E293B;
+  --accent: #00D1FF; /* Premium Cyan */
+  --accent-soft: rgba(0, 209, 255, 0.1);
+  --accent-hover: #00B8E6;
+  --bg: #F8FAFC;
   --card: #FFFFFF;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B7280;
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
   --error: #EF4444;
   --success: #10B981;
   --warning: #F59E0B;
   --info: #3B82F6;
-  --border: #E5E7EB;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
-  --radius: 10px;
-  --radius-sm: 6px;
-  --sidebar-width: 260px;
+  --border: #E2E8F0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --sidebar-width: 280px;
 }
 
 /* ============ RESET & BASE ============ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text-primary);
   line-height: 1.6;
@@ -871,8 +876,132 @@ input:focus, select:focus, textarea:focus {
   .ai-search-form { flex-direction: column; }
   .modal.modal-lg { max-width: 95%; }
 }
+/* ============ NEW PREMIUM GLASS STYLES ============ */
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.unread-notif {
+  border-left: 5px solid var(--accent) !important;
+  background: var(--accent-soft) !important;
+}
+
+.notif-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.notif-message {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.notif-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.btn-success-light { color: var(--success); }
+.btn-success-light:hover { background: rgba(16, 185, 129, 0.1); }
+.btn-danger-light { color: var(--error); }
+.btn-danger-light:hover { background: rgba(239, 68, 68, 0.1); }
+
+.p-24 { padding: 24px; }
+.mt-16 { margin-top: 16px; }
+
+/* Dashboard Glass Grid */
+.dashboard-page .stat-card.glass {
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+.dashboard-page .card.glass-card {
+  border: 1px solid var(--glass-border);
+}
 
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: 1fr; }
   .main-content { padding: 16px 12px; }
+}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* ============ TOAST NOTIFICATIONS ============ */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  background: var(--card);
+  padding: 16px 24px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  border-left: 4px solid var(--accent);
+  animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.toast-success { border-left-color: var(--success); }
+.toast-error { border-left-color: var(--error); }
+.toast-info { border-left-color: var(--info); }
+
+.toast-icon { font-size: 20px; }
+.toast-success .toast-icon { color: var(--success); }
+.toast-error .toast-icon { color: var(--error); }
+
+.toast-content h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.toast-content p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }

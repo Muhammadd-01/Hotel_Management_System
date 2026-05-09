@@ -53,7 +53,7 @@ const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
       .populate('room', 'roomNumber type price')
-      .populate('user', 'name email')
+      .populate('createdBy', 'name email')
       .sort({ createdAt: -1 });
 
     res.json({ success: true, bookings });
@@ -68,7 +68,7 @@ const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
       .populate('room', 'roomNumber type price description')
-      .populate('user', 'name email');
+      .populate('createdBy', 'name email');
 
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking nahi mili' });
