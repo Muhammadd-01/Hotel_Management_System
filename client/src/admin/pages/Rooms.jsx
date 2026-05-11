@@ -16,7 +16,7 @@ const Rooms = () => {
   const { addToast } = useToast();
 
   // Naye room ka empty form
-  const [form, setForm] = useState({ roomNumber: '', type: 'Single', price: '', status: 'Available' });
+  const [form, setForm] = useState({ roomNumber: '', type: 'Single', price: '', status: 'Available', images: [], description: '' });
 
   // ============ DATA FETCH KARNE KA FUNCTION ============
   const fetchRooms = async () => {
@@ -31,15 +31,30 @@ const Rooms = () => {
 
   // ============ MODAL OPEN KARNE KA LOGIC ============
   const openModal = (room = null) => {
-    setError('');
     if (room) {
       setEditing(room);
-      setForm({ roomNumber: room.roomNumber, type: room.type, price: room.price, status: room.status });
+      setForm({ roomNumber: room.roomNumber, type: room.type, price: room.price, status: room.status, images: room.images || [], description: room.description || '' });
     } else {
       setEditing(null);
-      setForm({ roomNumber: '', type: 'Single', price: '', status: 'Available' });
+      setForm({ roomNumber: '', type: 'Single', price: '', status: 'Available', images: [], description: '' });
     }
     setShowModal(true);
+  };
+
+  // ============ IMAGE UPLOAD HANDLER ============
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm(prev => ({ ...prev, images: [...prev.images, reader.result] }));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index) => {
+    setForm(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
   };
 
   // ============ FORM SUBMIT (ADD/UPDATE) ============
@@ -143,6 +158,47 @@ const Rooms = () => {
                   <option value="Available">Available</option><option value="Cleaning">Cleaning</option>
                   <option value="Maintenance">Maintenance</option>
                 </select>
+              </div>
+              <div className="form-group">
+                <label>Room Description</label>
+                <textarea 
+                  value={form.description} 
+                  onChange={e => setForm({...form, description: e.target.value})} 
+                  placeholder="Enter a luxurious description for this room..."
+                  style={{ width: '100%', minHeight: '80px', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}
+                />
+              </div>
+              <div className="form-group">
+                <label>Room Images (Upload from Device)</label>
+                <div className="ws-upload-container" style={{ border: '2px dashed #ddd', padding: '20px', borderRadius: '12px', textAlign: 'center', background: '#f9f9f9' }}>
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    style={{ display: 'none' }} 
+                    id="file-upload" 
+                  />
+                  <label htmlFor="file-upload" style={{ cursor: 'pointer', color: 'var(--accent)', fontWeight: 'bold' }}>
+                    Click to select images from your device
+                  </label>
+                </div>
+                
+                {/* Preview Gallery */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginTop: '15px' }}>
+                  {form.images.map((img, idx) => (
+                    <div key={idx} style={{ position: 'relative', height: '80px' }}>
+                      <img src={img} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                      <button 
+                        type="button" 
+                        onClick={() => removeImage(idx)}
+                        style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', fontSize: '12px', cursor: 'pointer' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>

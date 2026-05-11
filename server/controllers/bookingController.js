@@ -18,13 +18,29 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Yeh room pehle se booked hai ya safai ho rahi hai' });
     }
 
-    // 2. Stay ki duration aur total amount calculate karna
     const cin = new Date(checkIn);
     const cout = new Date(checkOut);
     const diffTime = Math.abs(cout - cin);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1; // Kam se kam 1 din
     
-    const totalAmount = diffDays * roomDetails.price;
+    // ============ DYNAMIC PRICING LOGIC ============
+    let dailyPrice = roomDetails.price;
+    const dayOfWeek = cin.getDay(); // 0=Sun, 6=Sat
+    
+    // Weekend surge (Friday, Saturday, Sunday) +20%
+    if ([0, 5, 6].includes(dayOfWeek)) {
+      dailyPrice *= 1.2;
+    }
+
+    // High demand surge (if many rooms are booked) +10%
+    const totalRooms = await Room.countDocuments();
+    const bookedRooms = await Room.countDocuments({ status: 'Booked' });
+    if (bookedRooms / totalRooms > 0.7) {
+      dailyPrice *= 1.1;
+    }
+
+    const extraServicesAmount = (req.body.extraServices || []).reduce((sum, service) => sum + (service.price || 0), 0);
+    const totalAmount = Math.round(diffDays * dailyPrice) + extraServicesAmount;
 
     // 3. Database mein nayi booking save karna
     const booking = await Booking.create({
@@ -35,6 +51,11 @@ const createBooking = async (req, res) => {
 
     // 4. Room ka status "Booked" kar dena taake koi aur book na kar sake
     await Room.findByIdAndUpdate(room, { status: 'Booked' });
+
+    // Emit real-time update
+    const io = req.app.get('io');
+    io.emit('roomUpdate', { roomId: room, status: 'Booked' });
+    io.emit('notification', { title: 'New Booking', message: `Room ${roomDetails.roomNumber} has been booked.` });
 
     res.status(201).json({
       success: true,

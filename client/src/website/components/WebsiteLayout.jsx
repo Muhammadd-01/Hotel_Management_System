@@ -62,7 +62,7 @@ const WebsiteLayout = ({ children }) => {
           <div className={`ws-nav-links ${isMenuOpen ? 'ws-nav-open' : ''}`}>
             {[
               { path: '/', label: 'Home' },
-              { path: '/rooms-explore', label: 'Suites' },
+              { path: '/rooms-explore', label: 'Rooms' },
               { path: '/amenities', label: 'Amenities' },
               { path: '/gallery', label: 'Gallery' },
               { path: '/guest-feedback', label: 'Reviews' },
@@ -188,7 +188,7 @@ const WebsiteLayout = ({ children }) => {
             <div className="ws-footer-col">
               <h4>Quick Links</h4>
               <Link to="/">Home</Link>
-              <Link to="/rooms-explore">Suites</Link>
+              <Link to="/rooms-explore">Rooms</Link>
               <Link to="/amenities">Experience</Link>
               <Link to="/gallery">Gallery</Link>
             </div>

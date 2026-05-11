@@ -86,18 +86,38 @@ const Dashboard = () => {
               <div className="stat-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}><HiOutlineKey size={24} /></div>
               <div className="stat-info"><h3>{stats?.totalRooms || 0}</h3><p>Total Rooms</p></div>
             </div>
-            <div className="stat-card glass">
-              <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981' }}><HiOutlineCheckCircle size={24} /></div>
-              <div className="stat-info"><h3>{stats?.availableRooms || 0}</h3><p>Available</p></div>
-            </div>
-            <div className="stat-card glass">
-              <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6' }}><HiOutlineCalendar size={24} /></div>
-              <div className="stat-info"><h3>{stats?.totalBookings || 0}</h3><p>Bookings</p></div>
-            </div>
-            <div className="stat-card glass">
-              <div className="stat-icon" style={{ background: 'rgba(0, 209, 255, 0.1)', color: 'var(--accent)' }}><HiOutlineCash size={24} /></div>
-              <div className="stat-info"><h3>Rs. {stats?.totalRevenue?.toLocaleString() || 0}</h3><p>Revenue</p></div>
-            </div>
+            
+            {/* Receptionist/Admin specific: Available Rooms */}
+            {['admin', 'manager', 'receptionist'].includes(user?.role) && (
+              <div className="stat-card glass">
+                <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981' }}><HiOutlineCheckCircle size={24} /></div>
+                <div className="stat-info"><h3>{stats?.availableRooms || 0}</h3><p>Available Now</p></div>
+              </div>
+            )}
+
+            {/* Housekeeping specific: Rooms to Clean */}
+            {['admin', 'manager', 'housekeeping'].includes(user?.role) && (
+              <div className="stat-card glass">
+                <div className="stat-icon" style={{ background: 'rgba(255, 171, 0, 0.1)', color: '#FFAB00' }}><HiOutlineCog size={24} /></div>
+                <div className="stat-info"><h3>{stats?.roomsToClean || 0}</h3><p>Rooms to Clean</p></div>
+              </div>
+            )}
+
+            {/* Admin/Manager specific: Revenue */}
+            {['admin', 'manager'].includes(user?.role) && (
+              <div className="stat-card glass">
+                <div className="stat-icon" style={{ background: 'rgba(0, 209, 255, 0.1)', color: 'var(--accent)' }}><HiOutlineCash size={24} /></div>
+                <div className="stat-info"><h3>Rs. {stats?.totalRevenue?.toLocaleString() || 0}</h3><p>Total Revenue</p></div>
+              </div>
+            )}
+
+            {/* Maintenance specific: Pending Issues */}
+            {['admin', 'manager', 'maintenance'].includes(user?.role) && (
+              <div className="stat-card glass">
+                <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}><HiOutlineWrench size={24} /></div>
+                <div className="stat-info"><h3>{stats?.pendingMaintenance || 0}</h3><p>Pending Issues</p></div>
+              </div>
+            )}
           </div>
 
           <div className="charts-grid">

@@ -58,7 +58,7 @@ const RoomsExplore = () => {
       <section className="ws-page-banner reveal" style={{ padding: '120px 0', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
         <span className="ws-section-tag">Luxurious Stays</span>
         <h1 style={{ fontSize: '4rem' }}>Our <span className="ws-accent">Collections</span></h1>
-        <p style={{ maxWidth: '700px', margin: '0 auto', color: 'var(--ws-text-muted)' }}>From executive suites to royal penthouses, discover a room that resonates with your taste and style.</p>
+        <p style={{ maxWidth: '700px', margin: '0 auto', color: 'var(--ws-text-muted)' }}>From executive rooms to royal penthouses, discover a space that resonates with your taste and style.</p>
       </section>
 
       <div className="ws-container ws-section">
@@ -78,30 +78,26 @@ const RoomsExplore = () => {
         <div className="ws-rooms-grid">
           {filteredRooms.map((room, i) => (
             <div key={room._id} className="ws-room-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
-              <Link to={`/book-room?roomId=${room._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div className="ws-room-card-img">
-                  <img src={ROOM_IMAGES[room.type?.toLowerCase()] || ROOM_IMAGES['default']} alt={room.type} />
-                  <span className="ws-room-type-badge">{room.type}</span>
-                  <div className="ws-room-price-tag">Rs. {room.price?.toLocaleString()}</div>
-                </div>
-              </Link>
+              <div className="ws-room-card-img">
+                <img src={room.images?.[0] || ROOM_IMAGES[room.type?.toLowerCase()] || ROOM_IMAGES['default']} alt={room.type} />
+                <span className="ws-room-type-badge">{room.type}</span>
+                <Link to={`/room-details/${room._id}`} className="ws-room-wishlist"><HiOutlineArrowRight /></Link>
+                <div className="ws-room-price-tag">Rs. {room.price?.toLocaleString()}</div>
+              </div>
               <div className="ws-room-card-body">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3>Room {room.roomNumber}</h3>
-                  <span style={{ color: 'var(--ws-accent)', fontWeight: 'bold', fontSize: '0.8rem' }}>{room.status.toUpperCase()}</span>
-                </div>
-                <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Experience sheer luxury in this {room.type?.toLowerCase()} sanctuary, featuring modern aesthetics and premium comfort.</p>
+                <h3>{room.type} Sanctuary</h3>
+                <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>{room.description || `Experience sheer luxury in this ${room.type?.toLowerCase()} sanctuary, featuring modern aesthetics and premium comfort.`}</p>
                 
-                <div className="ws-room-amenities" style={{ display: 'flex', gap: '15px', marginBottom: '2rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: 'var(--ws-text-muted)' }}><HiOutlineWifi /> WiFi</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: 'var(--ws-text-muted)' }}><HiOutlineDesktopComputer /> Smart TV</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: 'var(--ws-text-muted)' }}><HiOutlineCube /> AC</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: 'var(--ws-text-muted)' }}><HiOutlineUserGroup /> 2 Guests</div>
+                <div className="ws-room-amenities" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '2.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}><HiOutlineWifi color="var(--ws-accent)" /> Ultra-Fast WiFi</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}><HiOutlineDesktopComputer color="var(--ws-accent)" /> 4K Smart TV</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}><HiOutlineCube color="var(--ws-accent)" /> Climate Control</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}><HiOutlineUserGroup color="var(--ws-accent)" /> Up to 4 Guests</div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+                  <Link to={`/room-details/${room._id}`} className="ws-btn ws-btn-outline-white" style={{ flex: 1, justifyContent: 'center' }}>View Details</Link>
                   <Link to={`/book-room?roomId=${room._id}`} className="ws-btn ws-btn-primary" style={{ flex: 1, justifyContent: 'center' }}>Book Now</Link>
-                  <Link to="/gallery" className="ws-btn ws-btn-outline-white" style={{ padding: '0 15px' }} title="View Gallery"><HiOutlineArrowRight /></Link>
                 </div>
               </div>
             </div>

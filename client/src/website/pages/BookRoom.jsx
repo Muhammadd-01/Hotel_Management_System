@@ -17,23 +17,24 @@ const BookRoom = () => {
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
-    room: preSelectedRoomId || '',
-    guestName: user?.name || '',
-    guestEmail: user?.email || '',
-    guestPhone: '',
-    checkIn: '',
-    checkOut: '',
-    guests: 1,
-    specialRequests: ''
+    selectedExtras: [] // Array of selected extra services
   });
+
+  const [availableExtras, setAvailableExtras] = useState([]);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await API.get('/rooms');
-        if (res.data.success) {
-          // Display only Available rooms
-          setRooms(res.data.rooms.filter(r => r.status === 'Available'));
+        const [roomsRes, addonsRes] = await Promise.all([
+          API.get('/rooms'),
+          API.get('/addons')
+        ]);
+        
+        if (roomsRes.data.success) {
+          setRooms(roomsRes.data.rooms.filter(r => r.status === 'Available'));
+        }
+        if (addonsRes.data.success) {
+          setAvailableExtras(addonsRes.data.addons);
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -63,7 +64,17 @@ const BookRoom = () => {
   };
 
   const nights = calculateNights();
-  const totalAmount = selectedRoom ? selectedRoom.price * nights : 0;
+  const extrasAmount = form.selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+  const totalAmount = selectedRoom ? (selectedRoom.price * nights) + extrasAmount : 0;
+
+  const toggleExtra = (extra) => {
+    const isSelected = form.selectedExtras.find(e => e._id === extra._id);
+    if (isSelected) {
+      setForm({ ...form, selectedExtras: form.selectedExtras.filter(e => e._id !== extra._id) });
+    } else {
+      setForm({ ...form, selectedExtras: [...form.selectedExtras, extra] });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,7 +95,10 @@ const BookRoom = () => {
         roomType: selectedRoom?.type,
         guestName: form.guestName,
         guestEmail: form.guestEmail,
+        checkIn: form.checkIn,
+        checkOut: form.checkOut,
         nights,
+        extraServices: form.selectedExtras,
         totalAmount
       };
       
@@ -171,6 +185,48 @@ const BookRoom = () => {
                 <textarea name="specialRequests" value={form.specialRequests} onChange={handleChange} rows="4" placeholder="Any preferences, dietary requirements, or special occasions..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--ws-glass-border)', padding: '12px', borderRadius: '10px', color: 'white', outline: 'none', resize: 'none' }}></textarea>
               </div>
             </div>
+
+            <div className="glass-card" style={{ marginTop: '2rem' }}>
+              <h3 style={{ marginBottom: '2rem' }}>Enhance Your <span className="ws-accent">Experience</span></h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+                {availableExtras.map(extra => (
+                  <div 
+                    key={extra._id} 
+                    onClick={() => toggleExtra(extra)}
+                    style={{ 
+                      padding: '1.2rem', 
+                      background: form.selectedExtras.find(e => e._id === extra._id) ? 'rgba(0, 194, 168, 0.1)' : 'rgba(255,255,255,0.03)',
+                      border: '1px solid',
+                      borderColor: form.selectedExtras.find(e => e._id === extra._id) ? 'var(--ws-accent)' : 'var(--ws-glass-border)',
+                      borderRadius: '16px',
+                      cursor: 'pointer',
+                      transition: '0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '15px'
+                    }}
+                  >
+                    <span style={{ fontSize: '1.5rem' }}>{extra.icon || '✨'}</span>
+                    <div style={{ flex: 1 }}>
+                      <strong style={{ display: 'block', fontSize: '0.95rem' }}>{extra.name}</strong>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--ws-text-muted)' }}>Rs. {extra.price.toLocaleString()}</span>
+                    </div>
+                    <div style={{ 
+                      width: '20px', height: '20px', 
+                      border: '2px solid', 
+                      borderColor: form.selectedExtras.find(e => e._id === extra._id) ? 'var(--ws-accent)' : '#444',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: form.selectedExtras.find(e => e._id === extra._id) ? 'var(--ws-accent)' : 'transparent'
+                    }}>
+                      {form.selectedExtras.find(e => e._id === extra._id) && <span style={{ color: '#0b0f1a', fontSize: '12px' }}>✓</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* SIDEBAR SUMMARY */}
@@ -185,7 +241,20 @@ const BookRoom = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Category</span><strong>{selectedRoom.type}</strong></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Room No.</span><strong>{selectedRoom.roomNumber}</strong></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Nights</span><strong>{nights}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Rate</span><strong>Rs. {selectedRoom.price?.toLocaleString()}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Room Rate</span><strong>Rs. {selectedRoom.price?.toLocaleString()}</strong></div>
+                    
+                    {form.selectedExtras.length > 0 && (
+                      <div style={{ padding: '10px 0', borderTop: '1px solid var(--ws-glass-border)', borderBottom: '1px solid var(--ws-glass-border)' }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--ws-text-muted)', marginBottom: '8px' }}>Add-ons:</p>
+                        {form.selectedExtras.map(e => (
+                          <div key={e._id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                            <span>{e.name}</span>
+                            <span>Rs. {e.price.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div style={{ margin: '1rem 0', borderTop: '1px solid var(--ws-glass-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.3rem' }}>
                       <span>Total</span><strong className="ws-accent">Rs. {totalAmount.toLocaleString()}</strong>
                     </div>

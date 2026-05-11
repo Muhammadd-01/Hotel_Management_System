@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
-import { HiDocumentText, HiPrinter, HiX } from 'react-icons/hi';
+import { HiDocumentText, HiPrinter, HiX, HiDownload } from 'react-icons/hi';
+import { jsPDF } from 'jspdf';
 
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]); // Invoices ki list
@@ -34,6 +35,72 @@ const Invoices = () => {
       }
     } catch (err) { console.error(err); }
     finally { setDetailLoading(false); }
+  };
+
+  // ============ PDF DOWNLOAD KARNE KA FUNCTION ============
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    const margin = 20;
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(15, 23, 42); // Primary color
+    doc.text('LUXURYSTAY HOTEL INVOICE', margin, 30);
+    
+    doc.setDrawColor(0, 209, 255); // Accent color
+    doc.setLineWidth(1);
+    doc.line(margin, 35, 190, 35);
+    
+    // Details
+    doc.setFontSize(12);
+    doc.setTextColor(100, 116, 139); // Text secondary
+    doc.text(`Invoice Number: ${invoiceDetail.invoiceNumber}`, margin, 50);
+    doc.text(`Guest Name: ${invoiceDetail.guestName}`, margin, 58);
+    doc.text(`Room: ${invoiceDetail.room?.roomNumber} (${invoiceDetail.room?.type})`, margin, 66);
+    doc.text(`Date: ${new Date(invoiceDetail.generatedAt).toLocaleDateString()}`, 140, 50);
+    
+    // Table Header
+    doc.setFillColor(241, 245, 249);
+    doc.rect(margin, 80, 170, 10, 'F');
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Description', margin + 5, 87);
+    doc.text('Amount', 150, 87);
+    
+    // Table Body
+    doc.setFont('helvetica', 'normal');
+    let y = 100;
+    
+    // Room Rent
+    doc.text(`Room Rent (${invoiceDetail.nights} nights)`, margin + 5, y);
+    doc.text(`Rs. ${invoiceDetail.roomCharges?.toLocaleString()}`, 150, y);
+    y += 10;
+    
+    // Services
+    invoiceDetail.services?.forEach(s => {
+      doc.text(`${s.type}: ${s.description}`, margin + 5, y);
+      doc.text(`Rs. ${s.amount?.toLocaleString()}`, 150, y);
+      y += 10;
+    });
+    
+    // Footer
+    doc.line(margin, y, 190, y);
+    y += 15;
+    doc.text('Subtotal:', 120, y);
+    doc.text(`Rs. ${invoiceDetail.subtotal?.toLocaleString()}`, 150, y);
+    y += 10;
+    doc.text(`Tax (${invoiceDetail.taxRate}%):`, 120, y);
+    doc.text(`Rs. ${invoiceDetail.tax?.toLocaleString()}`, 150, y);
+    y += 15;
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 194, 168);
+    doc.text('Grand Total:', 100, y);
+    doc.text(`Rs. ${invoiceDetail.grandTotal?.toLocaleString()}`, 150, y);
+    
+    // Save the PDF
+    doc.save(`${invoiceDetail.invoiceNumber}.pdf`);
   };
 
   // ============ INVOICE PRINT KARNE KA FUNCTION ============
@@ -95,6 +162,7 @@ const Invoices = () => {
             <div className="modal-header">
               <h2>Invoice Details</h2>
               <div style={{display:'flex',gap:'8px'}}>
+                <button className="btn btn-secondary" onClick={downloadPDF}><HiDownload /> Download PDF</button>
                 <button className="btn btn-primary" onClick={printInvoice}><HiPrinter /> Print</button>
                 <button className="btn-close" onClick={() => setSelectedInvoice(null)}><HiX /></button>
               </div>

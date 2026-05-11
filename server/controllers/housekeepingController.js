@@ -27,6 +27,15 @@ const createTask = async (req, res) => {
       type: 'housekeeping',
       forUser: req.body.assignedTo || null
     });
+
+    // Emit real-time notification
+    const io = req.app.get('io');
+    if (req.body.assignedTo) {
+      io.to(req.body.assignedTo).emit('notification', { title: 'New Task', message: 'A new housekeeping task has been assigned to you.' });
+    } else {
+      io.emit('notification', { title: 'New Task', message: 'A new housekeeping task is available.' });
+    }
+
     const populated = await Housekeeping.findById(task._id)
       .populate('room', 'roomNumber type status')
       .populate('assignedTo', 'name');

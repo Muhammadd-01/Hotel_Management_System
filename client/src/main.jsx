@@ -30,12 +30,12 @@ setupGlobalErrorHandler();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ToastProvider>
+    <AuthProvider>
       <ThemeProvider>
-        <AuthProvider>
+        <ToastProvider>
           <App />
-        </AuthProvider>
+        </ToastProvider>
       </ThemeProvider>
-    </ToastProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

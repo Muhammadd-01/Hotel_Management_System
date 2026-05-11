@@ -1,6 +1,8 @@
 // Toast.jsx - Premium dynamic notifications
 import { useState, useEffect, createContext, useContext } from 'react';
 import { HiCheckCircle, HiExclamationCircle, HiInformationCircle } from 'react-icons/hi';
+import { io } from 'socket.io-client';
+import { useAuth } from './AuthContext';
 
 const ToastContext = createContext();
 
@@ -18,6 +20,41 @@ export const ToastProvider = ({ children }) => {
   const removeToast = (id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
+
+  const { user } = useAuth();
+  const [socket, setSocket] = useState(null);
+
+  // ============ SOCKET.IO INITIALIZATION ============
+  useEffect(() => {
+    const newSocket = io('http://localhost:5001');
+    setSocket(newSocket);
+
+    return () => newSocket.close();
+  }, []);
+
+  useEffect(() => {
+    if (socket && user) {
+      // Join user-specific room
+      socket.emit('join', user.id);
+
+      // Listen for notifications
+      socket.on('notification', (data) => {
+        addToast(data.title || 'Notification', data.message, 'info');
+      });
+
+      // Listen for room updates (optional: can trigger data refresh)
+      socket.on('roomUpdate', (data) => {
+        addToast('Room Status Change', `Room status updated for room ID: ${data.roomId}`, 'info');
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('notification');
+        socket.off('roomUpdate');
+      }
+    };
+  }, [socket, user]);
 
   // ============ GLOBAL ERROR INTERCEPTOR ============
   useEffect(() => {

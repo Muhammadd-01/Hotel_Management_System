@@ -19,11 +19,13 @@ const guestSchema = new mongoose.Schema({
   email: {
     type: String,
     lowercase: true,
-    trim: true
+    trim: true,
+    index: true
   },
   phone: {
     type: String,
-    trim: true
+    trim: true,
+    index: true
   },
   // Identification details (ID Card ya Passport)
   idNumber: {

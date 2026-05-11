@@ -6,13 +6,14 @@ const { protect, authorize } = require('../middleware/auth');
 const { roomRules } = require('../middleware/validate');
 
 // saare routes protected hain - login zaroori hai
-router.use(protect);
-
-// GET /api/rooms - saare rooms dekho (admin + staff dono)
+// GET /api/rooms - saare rooms dekho (Public)
 router.get('/', getAllRooms);
 
-// GET /api/rooms/:id - ek room dekho
+// GET /api/rooms/:id - ek room dekho (Public)
 router.get('/:id', getRoomById);
+
+// Protected routes below
+router.use(protect);
 
 // POST /api/rooms - naya room add karo (sirf admin)
 router.post('/', authorize('admin'), roomRules, createRoom);

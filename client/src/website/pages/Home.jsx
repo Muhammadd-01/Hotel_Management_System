@@ -137,7 +137,7 @@ const Home = () => {
 
             <div className="ws-hero-centered-actions">
               <Link to="/rooms-explore" className="ws-btn ws-btn-primary ws-btn-lg">
-                Explore Our Suites <HiOutlineArrowRight />
+                Explore Our Rooms <HiOutlineArrowRight />
               </Link>
               <Link to="/gallery" className="ws-btn ws-btn-outline-white ws-btn-lg">
                 Virtual Tour
@@ -222,32 +222,31 @@ const Home = () => {
         <div className="ws-container">
           <div className="ws-section-header reveal">
             <span className="ws-section-tag">Signature Rooms</span>
-            <h2>Luxury <span className="ws-accent">Suites</span></h2>
-            <p>Each suite is a masterpiece of design, offering unparalleled comfort and breathtaking views.</p>
+            <h2>Luxury <span className="ws-accent">Rooms</span></h2>
+            <p>Each room is a masterpiece of design, offering unparalleled comfort and breathtaking views.</p>
           </div>
-          <div className="ws-features-grid">
+          <div className="ws-rooms-grid">
             {featuredRooms.map((room, i) => (
               <div key={room._id} className="ws-room-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="ws-room-card-img">
-                  <img src={ROOM_IMAGES[room.type] || ROOM_IMAGES['default']} alt={room.type} />
+                  <img src={room.images?.[0] || ROOM_IMAGES[room.type] || ROOM_IMAGES['default']} alt={room.type} />
                   <span className="ws-room-type-badge">{room.type}</span>
-                  <span className="ws-room-price-tag">Rs. {room.price?.toLocaleString()}</span>
+                  <div className="ws-room-price-tag">Rs. {room.price?.toLocaleString()}</div>
                 </div>
                 <div className="ws-room-card-body">
-                  <h3>{room.type} Suite</h3>
+                  <h3>{room.type} Room</h3>
                   <p>{room.description || 'Experience ultimate luxury in our meticulously designed space.'}</p>
-                  <div style={{ marginTop: '1rem' }}>
-                    <span className="ws-amenity-tag">Room {room.roomNumber}</span>
-                    <span className="ws-amenity-tag">Premium View</span>
-                    <span className="ws-amenity-tag">Smart Controls</span>
+                  <div className="ws-room-amenities" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '2.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}>Room {room.roomNumber}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}>Premium View</div>
                   </div>
-                  <Link to={`/book-room?roomId=${room._id}`} className="ws-btn ws-btn-primary" style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}>Reserve Now</Link>
+                  <Link to={`/book-room?roomId=${room._id}`} className="ws-btn ws-btn-primary" style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}>Reserve Now</Link>
                 </div>
               </div>
             ))}
             {featuredRooms.length === 0 && !loadingRooms && (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px' }}>
-                <p style={{ color: 'var(--ws-text-muted)' }}>Check back soon for available luxury suites.</p>
+                <p style={{ color: 'var(--ws-text-muted)' }}>Check back soon for available luxury rooms.</p>
               </div>
             )}
           </div>
@@ -292,7 +291,7 @@ const Home = () => {
             <h2 style={{ color: 'white' }}>Begin Your <span className="ws-accent">Royal</span> Journey</h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '3rem' }}>Join the ranks of the world's most discerning travelers. Experience the future of hospitality at LuxuryStay.</p>
             <div className="ws-hero-btns" style={{ justifyContent: 'center' }}>
-              <Link to="/rooms-explore" className="ws-btn ws-btn-primary">Reserve Your Suite</Link>
+              <Link to="/rooms-explore" className="ws-btn ws-btn-primary">Reserve Your Room</Link>
               <Link to="/register" className="ws-btn ws-btn-outline-white">Join Membership</Link>
             </div>
           </div>

@@ -58,7 +58,7 @@ const getStats = async (req, res) => {
       stats: {
         totalRooms, availableRooms, bookedRooms, cleaningRooms,
         totalBookings, activeBookings, completedBookings, totalRevenue,
-        totalGuests, pendingMaintenance, pendingHousekeeping, pendingServices, averageRating,
+        totalGuests, pendingMaintenance, pendingHousekeeping, roomsToClean: cleaningRooms, pendingServices, averageRating,
         recentBookings, roomsByType,
         ...guestStats
       }

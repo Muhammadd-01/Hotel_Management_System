@@ -66,7 +66,8 @@ const createRoom = async (req, res) => {
       type,
       price,
       status: status || 'Available',
-      description
+      description,
+      images: req.body.images || []
     });
 
     res.status(201).json({

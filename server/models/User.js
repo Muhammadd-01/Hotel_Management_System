@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Email dena zaroori hai'],
     unique: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    index: true
   },
   // user ka password - minimum 6 characters
   password: {
@@ -26,9 +27,9 @@ const userSchema = new mongoose.Schema({
     select: false // password default mein query result mein nahi aayega
   },
   // user ka role - admin ya staff
-  role: {
+    role: {
     type: String,
-    enum: ['admin', 'staff', 'guest'],
+    enum: ['admin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff', 'guest'],
     default: 'guest'
   }
 }, {

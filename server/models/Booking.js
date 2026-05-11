@@ -13,12 +13,14 @@ const bookingSchema = new mongoose.Schema({
   room: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Room',
-    required: [true, 'Room select karna zaroori hai']
+    required: [true, 'Room select karna zaroori hai'],
+    index: true
   },
   // check-in ki date
   checkIn: {
     type: Date,
-    required: [true, 'Check-in date dena zaroori hai']
+    required: [true, 'Check-in date dena zaroori hai'],
+    index: true
   },
   // check-out ki date
   checkOut: {
@@ -32,13 +34,23 @@ const bookingSchema = new mongoose.Schema({
       values: ['confirmed', 'checked-out', 'cancelled'],
       message: 'Status confirmed, checked-out, ya cancelled mein se hona chahiye'
     },
-    default: 'confirmed'
+    default: 'confirmed',
+    index: true
   },
   // total amount calculate hota hai price * nights se
   totalAmount: {
     type: Number,
     default: 0
   },
+  // extra services jo booking ke waqt select ki gayi (Food, Spa, etc.)
+  extraServices: [{
+    name: String,
+    price: Number,
+    category: {
+      type: String,
+      enum: ['Food', 'Transport', 'Spa', 'Laundry', 'Other']
+    }
+  }],
   // kis user ne booking create ki
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

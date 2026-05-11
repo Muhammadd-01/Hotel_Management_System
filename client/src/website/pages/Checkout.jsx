@@ -14,14 +14,30 @@ const Checkout = () => {
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handlePayment = (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
     setProcessing(true);
-    // Mock payment processing
-    setTimeout(() => {
+    
+    try {
+      // Final submission to backend
+      const response = await API.post('/bookings', {
+        room: bookingData.room,
+        guestName: bookingData.guestName,
+        checkIn: bookingData.checkIn, // Need to ensure these are passed from BookRoom state
+        checkOut: bookingData.checkOut,
+        extraServices: bookingData.extraServices,
+        totalAmount: bookingData.totalAmount * 1.05 // Adding tax
+      });
+
+      if (response.data.success) {
+        setProcessing(false);
+        setSuccess(true);
+      }
+    } catch (err) {
+      console.error('Payment Error:', err);
+      alert('Reservation could not be finalized. Please try again.');
       setProcessing(false);
-      setSuccess(true);
-    }, 2500);
+    }
   };
 
   if (success) {
@@ -134,13 +150,24 @@ const Checkout = () => {
                   <strong>{bookingData?.nights || 3} Nights</strong>
                 </div>
                 <div style={{ margin: '1rem 0', borderTop: '1px solid var(--ws-glass-border)', paddingTop: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '8px' }}>
+                  {bookingData?.extraServices?.length > 0 && (
+                    <div style={{ padding: '10px 0', borderTop: '1px dashed var(--ws-glass-border)' }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--ws-text-muted)', marginBottom: '5px' }}>Luxury Add-ons:</p>
+                      {bookingData.extraServices.map((e, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                          <span>{e.name}</span>
+                          <span>Rs. {e.price.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '8px', borderTop: '1px solid var(--ws-glass-border)', paddingTop: '10px' }}>
                     <span>Subtotal</span>
                     <span>Rs. {bookingData?.totalAmount?.toLocaleString() || '75,000'}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '8px' }}>
                     <span>Luxury Tax (5%)</span>
-                    <span>Rs. {((bookingData?.totalAmount || 75000) * 0.05).toLocaleString()}</span>
+                    <span>Rs. {Math.round((bookingData?.totalAmount || 75000) * 0.05).toLocaleString()}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.4rem', marginTop: '1rem' }}>
                     <span>Total</span>

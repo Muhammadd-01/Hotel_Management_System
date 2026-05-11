@@ -25,6 +25,11 @@ const createRequest = async (req, res) => {
       message: `"${req.body.title}" - Priority: ${req.body.priority || 'Medium'}`,
       type: 'maintenance'
     });
+
+    // Emit real-time notification
+    const io = req.app.get('io');
+    io.emit('notification', { title: 'Maintenance Alert', message: `New maintenance request: ${req.body.title}` });
+
     const populated = await Maintenance.findById(request._id)
       .populate('room', 'roomNumber type')
       .populate('reportedBy', 'name');

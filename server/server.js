@@ -2,6 +2,10 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 const connectDB = require('./config/db');
 
 // Environment variables load karne ke liye .env file use hoti hai
@@ -15,8 +19,28 @@ const app = express();
 
 // ============ MIDDLEWARE SETTINGS ============
 
+// Security Headers
+app.use(helmet());
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Rate Limiting - brute force prevention
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+app.use('/api/', limiter);
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
 // JSON data parsing middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // CORS configuration to allow multiple origins
 app.use(cors({
@@ -34,19 +58,15 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/rooms', require('./routes/roomRoutes'));
 
 // Booking aur check-in management
-app.use('/api/bookings', require('./routes/bookingRoutes'));
-
 // Dashboard stats aur reports
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // AI Assistant functionality
-app.use('/api/ai', require('./routes/aiRoutes'));
-
-// Guest management
+app.use('/api/rooms', require('./routes/roomRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/guests', require('./routes/guestRoutes'));
-
-// Additional services (Food, Laundry wagera)
 app.use('/api/services', require('./routes/serviceRoutes'));
+app.use('/api/addons', require('./routes/addonRoutes'));
 
 // Housekeeping tasks
 app.use('/api/housekeeping', require('./routes/housekeepingRoutes'));
@@ -85,9 +105,31 @@ app.use((err, req, res, next) => {
 });
 
 // ============ SERVER LISTEN ============
-// Start server on a specific port
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📡 To access the API: http://localhost:${PORT}`);
+});
+
+// ============ SOCKET.IO SETUP ============
+const io = require('socket.io')(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    methods: ['GET', 'POST']
+  }
+});
+
+// Global io object for use in controllers
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  console.log('🔌 New client connected:', socket.id);
+  
+  socket.on('join', (userId) => {
+    socket.join(userId);
+    console.log(`👤 User joined room: ${userId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('❌ Client disconnected');
+  });
 });

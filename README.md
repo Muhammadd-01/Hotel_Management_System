@@ -30,8 +30,15 @@ A full-stack MERN Hotel Management System with AI-powered Smart Booking Assistan
 ### 🤖 AI Smart Booking Assistant
 - Natural language input (e.g., "cheap room for 2 people")
 - Keyword-based room suggestion engine
+- **Advanced Logic:** Guest count awareness and price range intelligence
 - Supports English & Roman Urdu keywords
-- Shows matching available rooms with prices
+
+### ⚡ Enterprise Features (NEW)
+- **Real-time Notifications:** Instant updates for bookings, housekeeping, and maintenance via Socket.io.
+- **Dynamic Pricing:** Automatic price adjustments based on weekends and occupancy levels.
+- **PDF Invoice Export:** Professional invoice generation and download using jsPDF.
+- **Security Hardening:** Rate limiting, Helmet security headers, and NoSQL injection prevention.
+- **Performance Optimized:** Code splitting (Lazy Loading) and Database indexing for lightning-fast queries.
 
 ---
 

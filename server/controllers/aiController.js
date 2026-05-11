@@ -33,10 +33,16 @@ const KEYWORD_MAP = {
   couple: { types: ['Double', 'Deluxe'], label: 'Couple' },
 
   // single/solo keywords -> Single room
-  single: { types: ['Single'], label: 'Solo' },
-  akela: { types: ['Single'], label: 'Solo' },
-  solo: { types: ['Single'], label: 'Solo' },
-  one: { types: ['Single'], label: 'Solo' },
+  single: { types: ['Single'], label: 'Solo', capacity: 1 },
+  akela: { types: ['Single'], label: 'Solo', capacity: 1 },
+  solo: { types: ['Single'], label: 'Solo', capacity: 1 },
+  one: { types: ['Single'], label: 'Solo', capacity: 1 },
+
+  // guest count keywords
+  two: { types: ['Double'], label: 'Couple', capacity: 2 },
+  three: { types: ['Double', 'Deluxe'], label: 'Family', capacity: 3 },
+  four: { types: ['Double', 'Deluxe'], label: 'Family', capacity: 4 },
+  five: { types: ['Deluxe'], label: 'Group', capacity: 5 },
 };
 
 // ============ SMART SEARCH ============
@@ -61,6 +67,7 @@ const smartSearch = async (req, res) => {
     let minPrice = null;
     let maxPrice = null;
     let matchedLabels = [];
+    let requiredCapacity = 0;
 
     // har word ko keyword map se match karo
     words.forEach(word => {
@@ -70,8 +77,15 @@ const smartSearch = async (req, res) => {
         if (mapping.minPrice) minPrice = mapping.minPrice;
         if (mapping.maxPrice) maxPrice = mapping.maxPrice;
         if (mapping.label) matchedLabels.push(mapping.label);
+        if (mapping.capacity) requiredCapacity = Math.max(requiredCapacity, mapping.capacity);
       }
     });
+
+    // Check for explicit numbers in query
+    const numberMatch = query.match(/\d+/);
+    if (numberMatch) {
+      requiredCapacity = Math.max(requiredCapacity, parseInt(numberMatch[0]));
+    }
 
     // agar koi match nahi mila to default suggestion do
     if (matchedTypes.size === 0) {

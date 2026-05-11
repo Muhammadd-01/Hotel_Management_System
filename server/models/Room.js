@@ -8,7 +8,8 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Room number dena zaroori hai'],
     unique: true,
-    trim: true
+    trim: true,
+    index: true
   },
   // room ki type - Single, Double, ya Deluxe
   type: {
@@ -17,13 +18,19 @@ const roomSchema = new mongoose.Schema({
     enum: {
       values: ['Single', 'Double', 'Deluxe'],
       message: 'Room type Single, Double, ya Deluxe mein se hona chahiye'
-    }
+    },
+    index: true
   },
   // room ki price per night
   price: {
     type: Number,
-    required: [true, 'Room price dena zaroori hai'],
-    min: [0, 'Price 0 se kam nahi ho sakti']
+    required: [true, 'Price dena zaroori hai'],
+    min: [0, 'Price negative nahi ho sakti']
+  },
+  // room ki images (URLs ka array)
+  images: {
+    type: [String],
+    default: []
   },
   // room ka current status
   status: {
@@ -32,7 +39,8 @@ const roomSchema = new mongoose.Schema({
       values: ['Available', 'Booked', 'Cleaning'],
       message: 'Status Available, Booked, ya Cleaning mein se hona chahiye'
     },
-    default: 'Available'
+    default: 'Available',
+    index: true
   },
   // room ki description - optional
   description: {
