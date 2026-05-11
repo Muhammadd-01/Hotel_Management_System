@@ -1,21 +1,21 @@
-// api.js - yeh file Axios instance banati hai jo backend se communicate karta hai
+// api.js - Creates Axios instance for backend communication
 import axios from 'axios';
 
-// Axios instance banao backend API ke liye
+// Create Axios instance for backend API
 const API = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
 // ============ REQUEST INTERCEPTOR ============
-// har request mein JWT token automatically add karo
+// Automatically add JWT token to every request
 API.interceptors.request.use(
   (config) => {
-    // localStorage se token nikalo
+    // Get token from localStorage
     const token = localStorage.getItem('token');
-    // agar token hai to Authorization header mein daalo
+    // If token exists, add to Authorization header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,16 +27,17 @@ API.interceptors.request.use(
 );
 
 // ============ RESPONSE INTERCEPTOR ============
-// agar 401 error aaye (unauthorized) to logout karo
+// Global response interceptor for session expiration
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle unauthorized access (expired or invalid token)
     if (error.response && error.response.status === 401) {
-      // token expire ho gaya ya invalid hai - logout karo
+      // Token expired or invalid - logout
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // agar login page pe nahi hain to redirect karo
-      if (window.location.pathname !== '/login') {
+      // Redirect to login if not already there
+      if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
     }

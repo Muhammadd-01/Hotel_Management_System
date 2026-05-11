@@ -1,9 +1,9 @@
 // Login.jsx - Yeh app ka entry point hai jahan staff login karta hai
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import API from '../services/api';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import API from '../../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState(''); // Email input state

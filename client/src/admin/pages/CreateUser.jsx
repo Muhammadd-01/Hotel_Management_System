@@ -1,6 +1,6 @@
 // CreateUser.jsx - Naye staff members register karne ke liye (Admin Only)
 import { useState } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiUserAdd, HiCheckCircle } from 'react-icons/hi';
 
 const CreateUser = () => {

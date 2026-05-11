@@ -1,15 +1,18 @@
 // Guests.jsx - Yeh page hotel ke guests ki profiles aur preferences manage karta hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiPlus, HiPencil, HiTrash, HiX, HiStar } from 'react-icons/hi';
+import ConfirmModal from '../components/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 const Guests = () => {
-  const [guests, setGuests] = useState([]); // Guests ki list
+  const [guests, setGuests] = useState([]); // List of guests
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [targetId, setTargetId] = useState(null);
   const [editing, setEditing] = useState(null); // Edit mode check
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { addToast } = useToast();
 
   // Khali guest form ki initial state
   const emptyForm = {
@@ -61,28 +64,35 @@ const Guests = () => {
   // ============ FORM SUBMIT (ADD/EDIT) ============
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       if (editing) {
         await API.put(`/guests/${editing._id}`, form);
-        setSuccess('Guest profile update ho gayi!');
+        addToast('Updated', 'Guest profile updated successfully!', 'success');
       } else {
         await API.post('/guests', form);
-        setSuccess('Naya guest profile ban gaya!');
+        addToast('Registered', 'New guest profile created successfully!', 'success');
       }
       fetchGuests(); setShowModal(false); setEditing(null);
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) { setError(err.response?.data?.message || 'Kuch masla aa gaya'); }
+    } catch (err) { 
+      addToast('Error', err.response?.data?.message || 'Could not save guest profile', 'error');
+    }
   };
 
   // ============ DELETE GUEST ============
-  const handleDelete = async (id) => {
-    if (!window.confirm('Kya aap is guest ko delete karna chahte hain?')) return;
+  const openDelete = (id) => {
+    setTargetId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await API.delete(`/guests/${id}`);
-      setSuccess('Guest delete ho gaya!'); fetchGuests();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) { setError('Delete nahi ho saka'); }
+      await API.delete(`/guests/${targetId}`);
+      addToast('Deleted', 'Guest profile has been removed.', 'success');
+      fetchGuests();
+      setShowConfirm(false);
+    } catch (err) { 
+      addToast('Error', 'Failed to delete profile.', 'error');
+    }
   };
 
   if (loading) return <div className="page-loading"><div className="spinner"></div></div>;
@@ -90,11 +100,9 @@ const Guests = () => {
   return (
     <div className="guests-page">
       <div className="page-header">
-        <div><h1>Guest Management</h1><p className="page-subtitle">Guests ki information aur VIP status yahan manage karein</p></div>
+        <div><h1>Guest Management</h1><p className="page-subtitle">Manage guest information and VIP status here</p></div>
         <button className="btn btn-primary" onClick={() => openModal()}><HiPlus /> Add Guest</button>
       </div>
-
-      {success && <div className="alert alert-success">{success}</div>}
 
       <div className="card">
         <div className="table-container">
@@ -114,11 +122,11 @@ const Guests = () => {
                   <td>
                     <div className="action-buttons">
                       <button className="btn-icon btn-edit" onClick={() => openModal(g)}><HiPencil /></button>
-                      <button className="btn-icon btn-delete" onClick={() => handleDelete(g._id)}><HiTrash /></button>
+                      <button className="btn-icon btn-delete" onClick={() => openDelete(g._id)}><HiTrash /></button>
                     </div>
                   </td>
                 </tr>
-              )) : <tr><td colSpan="7" className="empty-state">Koi guest profile nahi mili</td></tr>}
+              )) : <tr><td colSpan="7" className="empty-state">No guest profiles found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -165,6 +173,16 @@ const Guests = () => {
           </div>
         </div>
       )}
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal 
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Guest Profile"
+        message="Are you sure you want to delete this guest profile? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

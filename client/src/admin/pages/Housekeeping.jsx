@@ -1,6 +1,6 @@
 // Housekeeping.jsx - Yeh page hotel ki safai (Cleaning) tasks manage karta hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiPlus, HiX, HiCheck } from 'react-icons/hi';
 

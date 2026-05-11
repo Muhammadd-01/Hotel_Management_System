@@ -15,12 +15,12 @@ const app = express();
 
 // ============ MIDDLEWARE SETTINGS ============
 
-// JSON data parse karne ke liye middleware (e.g. jab frontend se body aati hai)
+// JSON data parsing middleware
 app.use(express.json());
 
-// CORS (Cross-Origin Resource Sharing) allow karna taake frontend aur backend communicate kar sakein
+// CORS configuration to allow multiple origins
 app.use(cors({
-  origin: 'http://localhost:5173', // Hamare Vite React app ka URL
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
 
@@ -68,26 +68,26 @@ app.use('/api/invoices', require('./routes/invoiceRoutes'));
 
 // ============ BASIC SERVER CHECKS ============
 
-// Check karna ke server chal raha hai ya nahi
+// Check if the server is running or not
 app.get('/', (req, res) => {
   res.json({ message: '🏨 HotelPro Backend API is LIVE!' });
 });
 
 // ============ GLOBAL ERROR HANDLING ============
-// Agar poore app mein kahin bhi error aaye to yeh handle karega
+// This will handle any errors occurring throughout the app
 app.use((err, req, res, next) => {
   console.error('❌ Server Error:', err.stack);
   res.status(500).json({
     success: false,
-    message: 'Backend mein koi masla aa gaya hai',
+    message: 'An issue occurred in the backend',
     error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
   });
 });
 
 // ============ SERVER LISTEN ============
-// Specific port pe server start karna
+// Start server on a specific port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server chal raha hai port ${PORT} par`);
-  console.log(`📡 API access karne ke liye: http://localhost:${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`📡 To access the API: http://localhost:${PORT}`);
 });

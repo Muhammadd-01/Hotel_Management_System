@@ -1,6 +1,6 @@
 // AIAssistant.jsx - Yeh page AI ke zariye rooms aur hotel search karne ke liye hai
 import { useState } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiOutlineLightBulb, HiSearch, HiOutlineInformationCircle } from 'react-icons/hi';
 import StatusBadge from '../components/StatusBadge';
 

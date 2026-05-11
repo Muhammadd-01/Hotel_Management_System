@@ -1,16 +1,19 @@
 // Bookings.jsx - Yeh page hotel ki bookings aur check-in/out handle karta hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiPlus, HiX, HiCheck } from 'react-icons/hi';
+import ConfirmModal from '../components/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 const Bookings = () => {
-  const [bookings, setBookings] = useState([]); // Bookings ki list
-  const [rooms, setRooms] = useState([]); // Khali rooms ki list (booking ke liye)
+  const [bookings, setBookings] = useState([]); // List of bookings
+  const [rooms, setRooms] = useState([]); // List of available rooms
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [targetId, setTargetId] = useState(null);
+  const { addToast } = useToast();
 
   // Nayi booking ka form data
   const [form, setForm] = useState({
@@ -37,28 +40,32 @@ const Bookings = () => {
   // ============ FORM SUBMIT (NEW BOOKING) ============
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       await API.post('/bookings', form);
-      setSuccess('Booking kamyabi se ho gayi!');
+      addToast('Success', 'Booking has been confirmed successfully!', 'success');
       setShowModal(false);
       setForm({ guestName: '', room: '', checkIn: '', checkOut: '', status: 'confirmed' });
-      fetchData(); // Data refresh karo
-      setTimeout(() => setSuccess(''), 3000);
+      fetchData(); // Refresh data
     } catch (err) {
-      setError(err.response?.data?.message || 'Booking nahi ho saki');
+      addToast('Error', err.response?.data?.message || 'Could not process booking', 'error');
     }
   };
 
   // ============ CHECK-OUT KARNE KA FUNCTION ============
-  const handleCheckOut = async (id) => {
-    if (!window.confirm('Kya guest check-out kar raha hai?')) return;
+  const openCheckOut = (id) => {
+    setTargetId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmCheckOut = async () => {
     try {
-      await API.put(`/bookings/${id}`, { status: 'checked-out' });
-      setSuccess('Guest check-out ho gaya! Room ab safai ke liye bhej diya gaya hai.');
+      await API.put(`/bookings/${targetId}`, { status: 'checked-out' });
+      addToast('Checked Out', 'Guest has checked out. Room marked for cleaning.', 'success');
       fetchData();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) { setError('Check-out mein masla hua'); }
+      setShowConfirm(false);
+    } catch (err) { 
+      addToast('Error', 'Failed to process check-out.', 'error');
+    }
   };
 
   if (loading) return <div className="page-loading"><div className="spinner"></div></div>;
@@ -66,11 +73,9 @@ const Bookings = () => {
   return (
     <div className="bookings-page">
       <div className="page-header">
-        <div><h1>Reservations</h1><p className="page-subtitle">Guest bookings aur stay details yahan se manage karein</p></div>
+        <div><h1>Reservations</h1><p className="page-subtitle">Manage guest bookings and stay details here</p></div>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}><HiPlus /> New Booking</button>
       </div>
-
-      {success && <div className="alert alert-success">{success}</div>}
 
       <div className="card">
         <div className="table-container">
@@ -88,13 +93,13 @@ const Bookings = () => {
                   <td><StatusBadge status={b.status} /></td>
                   <td>
                     {b.status === 'confirmed' && (
-                      <button className="btn-sm btn-success" onClick={() => handleCheckOut(b._id)}>
+                      <button className="btn-sm btn-success" onClick={() => openCheckOut(b._id)}>
                         <HiCheck /> Check-Out
                       </button>
                     )}
                   </td>
                 </tr>
-              )) : <tr><td colSpan="6" className="empty-state">Koi booking nahi mili</td></tr>}
+              )) : <tr><td colSpan="6" className="empty-state">No bookings found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -113,7 +118,7 @@ const Bookings = () => {
               <div className="form-group"><label>Guest Full Name</label><input value={form.guestName} onChange={e => setForm({...form, guestName: e.target.value})} required /></div>
               <div className="form-group"><label>Select Available Room</label>
                 <select value={form.room} onChange={e => setForm({...form, room: e.target.value})} required>
-                  <option value="">-- Room chunein --</option>
+                  <option value="">-- Choose a Room --</option>
                   {rooms.map(r => <option key={r._id} value={r._id}>Room {r.roomNumber} - {r.type} (Rs. {r.price})</option>)}
                 </select>
               </div>
@@ -129,6 +134,16 @@ const Bookings = () => {
           </div>
         </div>
       )}
+      {/* Check-Out Confirmation Modal */}
+      <ConfirmModal 
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={confirmCheckOut}
+        title="Confirm Check-Out"
+        message="Is the guest ready to check out? The room will be marked for cleaning immediately."
+        confirmText="Confirm Check-Out"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

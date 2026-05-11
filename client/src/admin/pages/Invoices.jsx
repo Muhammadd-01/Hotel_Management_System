@@ -1,6 +1,6 @@
 // Invoices.jsx - Yeh page billing, tax aur printable invoices ke liye hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiDocumentText, HiPrinter, HiX } from 'react-icons/hi';
 

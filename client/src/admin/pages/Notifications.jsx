@@ -1,6 +1,6 @@
 // Notifications.jsx - Yeh page system ke alerts aur alerts history dikhata hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiOutlineBell, HiCheck, HiTrash } from 'react-icons/hi';
 
 const Notifications = () => {

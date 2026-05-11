@@ -1,6 +1,6 @@
 // Settings.jsx - System configuration page for Admins
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiOutlineSave, HiOutlineRefresh } from 'react-icons/hi';
 
 const Settings = () => {

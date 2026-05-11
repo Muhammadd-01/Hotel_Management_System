@@ -19,6 +19,15 @@ export const ToastProvider = ({ children }) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  // ============ GLOBAL ERROR INTERCEPTOR ============
+  useEffect(() => {
+    const handleGlobalError = (event) => {
+      addToast('Royal Service Notice', event.detail || 'A synchronization issue occurred.', 'error');
+    };
+    window.addEventListener('luxury-error', handleGlobalError);
+    return () => window.removeEventListener('luxury-error', handleGlobalError);
+  }, []);
+
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}

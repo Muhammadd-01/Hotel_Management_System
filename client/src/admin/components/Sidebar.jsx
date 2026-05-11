@@ -1,15 +1,15 @@
 // Sidebar.jsx - Yeh component navigation menu aur user info dikhata hai
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   HiOutlineViewGrid, HiOutlineKey, HiOutlineCalendar, HiOutlineLightBulb,
   HiOutlineLogout, HiOutlineUserAdd, HiOutlineUsers, HiOutlineDocumentText,
-  HiOutlineCog, HiOutlineStar, HiOutlineBell, HiOutlineUserGroup
+  HiOutlineCog, HiOutlineStar, HiOutlineBell, HiOutlineUserGroup, HiOutlineHome
 } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import ConfirmModal from './ConfirmModal';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../../context/ToastContext';
 
 const Sidebar = () => {
   const { user, logout, isAdmin } = useAuth(); // Auth context se user details aur functions lena
@@ -38,14 +38,14 @@ const Sidebar = () => {
 
   const confirmLogout = () => {
     logout();
-    addToast('Logged Out', 'Aap kamyabi se logout ho gaye hain.', 'info');
+    addToast('Logged Out', 'You have been successfully signed out. Have a pleasant day!', 'info');
     navigate('/login');
     setShowLogoutModal(false);
   };
 
   return (
     <aside className="sidebar">
-      {/* Sidebar Header - Logo aur Name */}
+      {/* Sidebar Header - Logo and Brand */}
       <div className="sidebar-header">
         <div className="logo">
           <span className="logo-icon">🏨</span>
@@ -55,12 +55,15 @@ const Sidebar = () => {
 
       {/* Main Navigation Links */}
       <nav className="sidebar-nav">
-        {/* Humesha nazar aane wale links */}
+        {/* Navigation links always visible */}
+        <NavLink to="/" className="nav-link">
+          <HiOutlineHome className="nav-icon" /><span>Back to Website</span>
+        </NavLink>
         <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <HiOutlineViewGrid className="nav-icon" /><span>Dashboard</span>
         </NavLink>
 
-        {/* Staff aur Admin ke liye Links */}
+        {/* Staff and Admin restricted links */}
         {(user?.role === 'admin' || user?.role === 'staff') && (
           <>
             <NavLink to="/rooms" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -72,7 +75,7 @@ const Sidebar = () => {
           </>
         )}
         
-        {/* Bookings Link - Sab ko nazar aayega lekin content alag hoga */}
+        {/* Bookings Link - Context aware title */}
         <NavLink to="/bookings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <HiOutlineCalendar className="nav-icon" /><span>{user?.role === 'guest' ? 'My Bookings' : 'Bookings'}</span>
         </NavLink>
@@ -105,7 +108,7 @@ const Sidebar = () => {
           <HiOutlineStar className="nav-icon" /><span>{user?.role === 'guest' ? 'My Feedback' : 'Guest Reviews'}</span>
         </NavLink>
         
-        {/* AI Assistant Link - Everyone loves AI */}
+        {/* AI Assistant Link */}
         <NavLink to="/ai-assistant" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <HiOutlineLightBulb className="nav-icon" /><span>AI Assistant</span>
         </NavLink>
@@ -117,7 +120,7 @@ const Sidebar = () => {
           {unread > 0 && <span className="notif-badge">{unread}</span>}
         </NavLink>
 
-        {/* Admin Only Links */}
+        {/* Admin Only Management Links */}
         {user?.role === 'admin' && (
           <>
             <div className="nav-divider"></div>
@@ -134,7 +137,7 @@ const Sidebar = () => {
         )}
       </nav>
 
-      {/* Sidebar Footer - User profile aur Logout button */}
+      {/* Sidebar Footer - User profile and Logout */}
       <div className="sidebar-footer">
         <div className="user-info">
           <div className="user-avatar">{user?.name?.charAt(0).toUpperCase()}</div>
@@ -152,7 +155,7 @@ const Sidebar = () => {
         onClose={() => setShowLogoutModal(false)}
         onConfirm={confirmLogout}
         title="Logout Confirmation"
-        message="Kya aap waqai logout karna chahte hain? Aapka session khatam ho jayega."
+        message="Are you sure you want to sign out? Your current session will be ended."
         confirmText="Yes, Logout"
         cancelText="Cancel"
       />

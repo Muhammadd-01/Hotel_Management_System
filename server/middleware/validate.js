@@ -34,8 +34,8 @@ const registerRules = [
     .withMessage('Password kam se kam 6 characters ka hona chahiye'),
   body('role')
     .optional()
-    .isIn(['admin', 'staff'])
-    .withMessage('Role admin ya staff hona chahiye'),
+    .isIn(['admin', 'staff', 'guest'])
+    .withMessage('Role admin, staff, ya guest hona chahiye'),
   handleValidation
 ];
 

@@ -1,6 +1,6 @@
 // Services.jsx - Yeh page guest ki extra services (Room service, Laundry) manage karta hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiPlus, HiX } from 'react-icons/hi';
 

@@ -1,16 +1,19 @@
 // Rooms.jsx - Yeh page hotel ke saare rooms manage karta hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiPlus, HiPencil, HiTrash, HiX } from 'react-icons/hi';
+import ConfirmModal from '../components/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 const Rooms = () => {
-  const [rooms, setRooms] = useState([]); // Rooms ki list store karne ke liye
-  const [loading, setLoading] = useState(true); // Loading spinner ke liye
-  const [showModal, setShowModal] = useState(false); // Add/Edit popup ke liye
-  const [editing, setEditing] = useState(null); // Kis room ko edit kar rahe hain
-  const [error, setError] = useState(''); // Error message dikhane ke liye
-  const [success, setSuccess] = useState(''); // Success message ke liye
+  const [rooms, setRooms] = useState([]); // List of rooms
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [targetId, setTargetId] = useState(null);
+  const [editing, setEditing] = useState(null); // Edit mode check
+  const { addToast } = useToast();
 
   // Naye room ka empty form
   const [form, setForm] = useState({ roomNumber: '', type: 'Single', price: '', status: 'Available' });
@@ -42,34 +45,34 @@ const Rooms = () => {
   // ============ FORM SUBMIT (ADD/UPDATE) ============
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       if (editing) {
-        // Purane room ko update karna
         await API.put(`/rooms/${editing._id}`, form);
-        setSuccess('Room update ho gaya!');
+        addToast('Updated', 'Room details updated successfully!', 'success');
       } else {
-        // Naya room create karna
         await API.post('/rooms', form);
-        setSuccess('Naya room add ho gaya!');
+        addToast('Added', 'New room added to inventory!', 'success');
       }
       fetchRooms(); setShowModal(false);
-      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Kuch galat ho gaya');
+      addToast('Error', err.response?.data?.message || 'Could not save room details', 'error');
     }
   };
 
   // ============ DELETE ROOM ============
-  const handleDelete = async (id) => {
-    if (!window.confirm('Kya aap waqai is room ko delete karna chahte hain?')) return;
+  const openDelete = (id) => {
+    setTargetId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await API.delete(`/rooms/${id}`);
-      setSuccess('Room delete ho gaya!');
+      await API.delete(`/rooms/${targetId}`);
+      addToast('Deleted', 'Room removed from inventory.', 'success');
       fetchRooms();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
-      setError('Room delete nahi ho saka');
+      setShowConfirm(false);
+    } catch (err) { 
+      addToast('Error', 'Failed to delete room.', 'error');
     }
   };
 
@@ -79,13 +82,9 @@ const Rooms = () => {
     <div className="rooms-page">
       {/* Header section */}
       <div className="page-header">
-        <div><h1>Room Management</h1><p className="page-subtitle">Hotel ke rooms ki inventory aur status yahan se manage karein</p></div>
+        <div><h1>Room Management</h1><p className="page-subtitle">Manage hotel room inventory and status here</p></div>
         <button className="btn btn-primary" onClick={() => openModal()}><HiPlus /> Add New Room</button>
       </div>
-
-      {/* Alerts */}
-      {success && <div className="alert alert-success">{success}</div>}
-      {error && !showModal && <div className="alert alert-error">{error}</div>}
 
       {/* Rooms Table Card */}
       <div className="card">
@@ -104,11 +103,11 @@ const Rooms = () => {
                   <td>
                     <div className="action-buttons">
                       <button className="btn-icon btn-edit" onClick={() => openModal(room)}><HiPencil /></button>
-                      <button className="btn-icon btn-delete" onClick={() => handleDelete(room._id)}><HiTrash /></button>
+                      <button className="btn-icon btn-delete" onClick={() => openDelete(room._id)}><HiTrash /></button>
                     </div>
                   </td>
                 </tr>
-              )) : <tr><td colSpan="5" className="empty-state">Koi room nahi mila</td></tr>}
+              )) : <tr><td colSpan="5" className="empty-state">No rooms found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -153,6 +152,16 @@ const Rooms = () => {
           </div>
         </div>
       )}
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal 
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Room"
+        message="Are you sure you want to delete this room? This action will permanently remove it from the system."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

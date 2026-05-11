@@ -1,5 +1,6 @@
 // authController.js - yeh controller authentication handle karta hai (login, register, profile)
 const User = require('../models/User');
+const Guest = require('../models/Guest');
 const jwt = require('jsonwebtoken');
 
 // ============ JWT TOKEN GENERATE KARO ============
@@ -11,32 +12,32 @@ const generateToken = (id) => {
 };
 
 // ============ LOGIN CONTROLLER ============
-// POST /api/auth/login - user login karta hai email aur password se
+// POST /api/auth/login - user logs in using email and password
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // user ko email se find karo, password bhi include karo (+password)
+    // find user by email, include password
     const user = await User.findOne({ email }).select('+password');
 
-    // agar user nahi mila to error do
+    // if user is not found return error
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Email ya password galat hai'
+        message: 'Invalid email or password'
       });
     }
 
-    // password match karo
+    // match password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Email ya password galat hai'
+        message: 'Invalid email or password'
       });
     }
 
-    // token generate karo aur response bhejo
+    // generate token and send response
     const token = generateToken(user._id);
 
     res.json({
@@ -54,27 +55,27 @@ const login = async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Login mein error aa gaya'
+      message: 'An error occurred during login'
     });
   }
 };
 
 // ============ REGISTER CONTROLLER ============
-// POST /api/auth/register - admin new staff user create karta hai
+// POST /api/auth/register - admin creates a new staff user
 const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // check karo ke email pehle se registered to nahi hai
+    // check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'Yeh email pehle se registered hai'
+        message: 'This email is already registered'
       });
     }
 
-    // naya user create karo
+    // create a new user
     const user = await User.create({
       name,
       email,
@@ -84,7 +85,7 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User successfully create ho gaya!',
+      message: 'User created successfully!',
       user: {
         id: user._id,
         name: user.name,
@@ -96,37 +97,50 @@ const register = async (req, res) => {
     console.error('Register error:', error);
     res.status(500).json({
       success: false,
-      message: 'Registration mein error aa gaya'
+      message: 'An error occurred during registration'
     });
   }
 };
 
 // ============ GUEST SIGNUP (PUBLIC) ============
-// POST /api/auth/signup - naya guest account banata hai
+// POST /api/auth/signup - creates a new guest account
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user exists
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai' });
+      return res.status(400).json({ success: false, message: 'This email is already registered' });
     }
 
-    // Create guest user
+    // Create guest user in User model (for authentication)
     const user = await User.create({
       name,
       email,
       password,
-      role: 'guest' // Force guest role for public signup
+      role: 'guest'
     });
 
-    // Token generate karo taake signup ke baad foran login ho jaye
+    // Create entry in Guest model for administrative management
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || 'Guest';
+
+    await Guest.create({
+      firstName,
+      lastName,
+      email,
+      phone: 'Not provided',
+      idNumber: 'Pending'
+    });
+
+    // Generate JWT token
     const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
-      message: 'Account kamyabi se ban gaya!',
+      message: 'Account created successfully!',
       token,
       user: {
         id: user._id,
@@ -137,12 +151,12 @@ const signup = async (req, res) => {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ success: false, message: 'Signup mein error aa gaya' });
+    res.status(500).json({ success: false, message: 'An error occurred during signup' });
   }
 };
 
 // ============ GET CURRENT USER ============
-// GET /api/auth/me - logged in user ki profile return karo
+// GET /api/auth/me - return the logged in user profile
 const getMe = async (req, res) => {
   try {
     // req.user auth middleware ne set kiya hai

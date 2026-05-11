@@ -1,6 +1,6 @@
 // Maintenance.jsx - Yeh page hotel ke repairs aur maintenance requests ke liye hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { HiPlus, HiX } from 'react-icons/hi';
 

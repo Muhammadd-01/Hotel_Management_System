@@ -1,18 +1,21 @@
 // StaffManagement.jsx - Yeh page sirf Admin ke liye hai taake staff accounts manage karein
 import { useState, useEffect } from 'react';
-import API from '../services/api';
-import { HiPencil, HiTrash, HiX } from 'react-icons/hi';
+import API from '../../services/api';
+import { HiPencil, HiTrash, HiX, HiPlus } from 'react-icons/hi';
+import ConfirmModal from '../components/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 const StaffManagement = () => {
-  const [staffList, setStaffList] = useState([]); // Saare staff members ki list
+  const [staffList, setStaffList] = useState([]); // List of all staff members
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [targetStaff, setTargetStaff] = useState(null);
   const [editing, setEditing] = useState(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { addToast } = useToast();
   
-  // Edit karne ke liye form state
-  const [form, setForm] = useState({ name: '', email: '', role: 'staff' });
+  // Form state
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'staff' });
 
   // ============ STAFF LOAD KARNE KA FUNCTION ============
   const fetchStaff = async () => {
@@ -25,34 +28,54 @@ const StaffManagement = () => {
 
   useEffect(() => { fetchStaff(); }, []);
 
-  // ============ EDIT MODAL OPEN KARNA ============
-  const openEdit = (staff) => {
-    setEditing(staff);
-    setForm({ name: staff.name, email: staff.email, role: staff.role });
+  // ============ MODAL LOGIC ============
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ name: '', email: '', password: '', role: 'staff' });
     setShowModal(true);
   };
 
-  // ============ UPDATE STAFF DETAILS ============
+  const openEdit = (staff) => {
+    setEditing(staff);
+    setForm({ name: staff.name, email: staff.email, password: '', role: staff.role });
+    setShowModal(true);
+  };
+
+  // ============ FORM SUBMIT (ADD/UPDATE) ============
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.put(`/staff/${editing._id}`, form);
-      setSuccess('Staff details update ho gayin!');
+      if (editing) {
+        // Update existing staff
+        await API.put(`/staff/${editing._id}`, { name: form.name, email: form.email, role: form.role });
+        addToast('Success', 'Staff details updated successfully!', 'success');
+      } else {
+        // Create new staff
+        await API.post('/auth/register', form);
+        addToast('Success', 'New staff member added successfully!', 'success');
+      }
       setShowModal(false);
       fetchStaff();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) { setError('Update nahi ho saka'); }
+    } catch (err) { 
+      addToast('Error', err.response?.data?.message || 'Could not save staff details.', 'error');
+    }
   };
 
   // ============ DEACTIVATE STAFF (DELETE) ============
-  const handleDeactivate = async (id, name) => {
-    if (!window.confirm(`Kya aap waqai "${name}" ka account deactivate karna chahte hain?`)) return;
+  const openDeactivate = (staff) => {
+    setTargetStaff(staff);
+    setShowConfirm(true);
+  };
+
+  const confirmDeactivate = async () => {
     try {
-      await API.delete(`/staff/${id}`);
-      setSuccess('Account deactivate ho gaya.');
+      await API.delete(`/staff/${targetStaff._id}`);
+      addToast('Account Deactivated', `Account for ${targetStaff.name} has been closed.`, 'success');
       fetchStaff();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) { setError('Masla aa gaya'); }
+      setShowConfirm(false);
+    } catch (err) { 
+      addToast('Error', 'Failed to deactivate account.', 'error');
+    }
   };
 
   if (loading) return <div className="page-loading"><div className="spinner"></div></div>;
@@ -60,10 +83,9 @@ const StaffManagement = () => {
   return (
     <div className="staff-page">
       <div className="page-header">
-        <div><h1>👥 Staff Management</h1><p className="page-subtitle">Hotel ke staff accounts aur roles yahan se control karein (Admin Only)</p></div>
+        <div><h1>👥 Staff Management</h1><p className="page-subtitle">Manage employee accounts and system roles (Admin Only)</p></div>
+        <button className="btn btn-primary" onClick={openAdd}><HiPlus /> Add Staff</button>
       </div>
-
-      {success && <div className="alert alert-success">{success}</div>}
 
       <div className="card">
         <div className="table-container">
@@ -81,7 +103,7 @@ const StaffManagement = () => {
                   <td>
                     <div className="action-buttons">
                       <button className="btn-icon btn-edit" onClick={() => openEdit(s)}><HiPencil /></button>
-                      <button className="btn-icon btn-delete" onClick={() => handleDeactivate(s._id, s.name)} title="Deactivate"><HiTrash /></button>
+                      <button className="btn-icon btn-delete" onClick={() => openDeactivate(s)} title="Deactivate"><HiTrash /></button>
                     </div>
                   </td>
                 </tr>
@@ -95,10 +117,13 @@ const StaffManagement = () => {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header"><h2>Edit Staff Member</h2><button className="btn-close" onClick={() => setShowModal(false)}><HiX /></button></div>
+            <div className="modal-header"><h2>{editing ? 'Edit Staff Member' : 'Add New Staff'}</h2><button className="btn-close" onClick={() => setShowModal(false)}><HiX /></button></div>
             <form onSubmit={handleSubmit} className="modal-form">
               <div className="form-group"><label>Full Name</label><input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required /></div>
               <div className="form-group"><label>Email Address</label><input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required /></div>
+              {!editing && (
+                <div className="form-group"><label>Initial Password</label><input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required /></div>
+              )}
               <div className="form-group"><label>Role</label>
                 <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}>
                   <option value="staff">Staff</option><option value="admin">Admin Manager</option>
@@ -106,12 +131,22 @@ const StaffManagement = () => {
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Update Account</button>
+                <button type="submit" className="btn btn-primary">{editing ? 'Update Account' : 'Register Staff'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
+      {/* Deactivate Confirmation Modal */}
+      <ConfirmModal 
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={confirmDeactivate}
+        title="Deactivate Account"
+        message={`Are you sure you want to deactivate ${targetStaff?.name}'s account? This action will revoke their access.`}
+        confirmText="Deactivate"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

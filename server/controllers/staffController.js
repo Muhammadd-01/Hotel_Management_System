@@ -1,10 +1,13 @@
 // staffController.js - yeh controller staff management handle karta hai (admin only)
 const User = require('../models/User');
 
-// GET /api/staff - saare staff members ki list
+// GET /api/staff - saare staff members ki list (admin aur staff roles only)
 const getAllStaff = async (req, res) => {
   try {
-    const staff = await User.find().select('-password').sort({ createdAt: -1 });
+    // Sirf admin aur staff roles ko fetch karein, guests ko nahi
+    const staff = await User.find({ role: { $in: ['admin', 'staff'] } })
+      .select('-password')
+      .sort({ createdAt: -1 });
     res.json({ success: true, count: staff.length, staff });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Staff fetch mein error' });

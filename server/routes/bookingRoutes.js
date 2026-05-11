@@ -1,26 +1,26 @@
-// bookingRoutes.js - yeh file booking ke routes define karti hai
+// bookingRoutes.js - This file defines booking routes
 const express = require('express');
 const router = express.Router();
 const { getAllBookings, getBookingById, createBooking, checkoutBooking, cancelBooking } = require('../controllers/bookingController');
 const { protect } = require('../middleware/auth');
 const { bookingRules } = require('../middleware/validate');
 
-// saare routes protected hain
+// All routes are protected
 router.use(protect);
 
-// GET /api/bookings - saari bookings dekho
+// GET /api/bookings - view all bookings
 router.get('/', getAllBookings);
 
-// GET /api/bookings/:id - ek booking dekho
+// GET /api/bookings/:id - view a specific booking
 router.get('/:id', getBookingById);
 
-// POST /api/bookings - nayi booking banao
+// POST /api/bookings - create a new booking
 router.post('/', bookingRules, createBooking);
 
-// PUT /api/bookings/:id/checkout - checkout karo
+// PUT /api/bookings/:id/checkout - checkout booking
 router.put('/:id/checkout', checkoutBooking);
 
-// PUT /api/bookings/:id/cancel - booking cancel karo
+// PUT /api/bookings/:id/cancel - cancel booking
 router.put('/:id/cancel', cancelBooking);
 
 module.exports = router;

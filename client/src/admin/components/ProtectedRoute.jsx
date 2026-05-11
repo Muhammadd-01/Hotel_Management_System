@@ -1,6 +1,6 @@
 // ProtectedRoute.jsx - yeh component sirf logged-in users ko page dikhata hai
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 // agar user logged in nahi hai to login page pe bhejo
 const ProtectedRoute = ({ children }) => {

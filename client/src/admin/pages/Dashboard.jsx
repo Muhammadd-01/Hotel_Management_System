@@ -1,7 +1,7 @@
 // Dashboard.jsx - Yeh page hotel ki live summary dikhata hai
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import API from '../services/api';
+import { useAuth } from '../../context/AuthContext';
+import API from '../../services/api';
 import StatusBadge from '../components/StatusBadge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 

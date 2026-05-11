@@ -23,13 +23,11 @@ const guestSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Phone number zaroori hai'],
     trim: true
   },
   // Identification details (ID Card ya Passport)
   idNumber: {
-    type: String,
-    required: [true, 'ID Number zaroori hai']
+    type: String
   },
   idType: {
     type: String,

@@ -1,6 +1,6 @@
 // Feedback.jsx - Yeh page guests ke reviews aur ratings dikhata hai
 import { useState, useEffect } from 'react';
-import API from '../services/api';
+import API from '../../services/api';
 import { HiPlus, HiX, HiStar } from 'react-icons/hi';
 
 // Sitaray (Stars) dikhane wala chota component
