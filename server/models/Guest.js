@@ -1,21 +1,20 @@
-// Guest.js - Guest ki detailed information store karne ke liye database model
+// Guest.js - Detailed information model for hotel guests (Walk-ins and Registered)
 const mongoose = require('mongoose');
 
-// Guest schema define karna
 const guestSchema = new mongoose.Schema({
-  // Guest ka pehla naam
+  // Personal Identification
   firstName: {
     type: String,
-    required: [true, 'First name zaroori hai'],
+    required: [true, 'First name is required'],
     trim: true
   },
-  // Guest ka aakhri naam
   lastName: {
     type: String,
-    required: [true, 'Last name zaroori hai'],
+    required: [true, 'Last name is required'],
     trim: true
   },
-  // Contact details
+  
+  // Contact Channels
   email: {
     type: String,
     lowercase: true,
@@ -27,39 +26,47 @@ const guestSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
-  // Identification details (ID Card ya Passport)
+
+  // Identity Verification
   idNumber: {
-    type: String
+    type: String,
+    trim: true
   },
   idType: {
     type: String,
     enum: ['CNIC', 'Passport', 'Driving License', 'Other'],
     default: 'CNIC'
   },
-  // Address ki maloomat
+  cnicFrontImage: {
+    type: String // Base64 or URL
+  },
+  cnicBackImage: {
+    type: String // Base64 or URL
+  },
+
+  // Geography
   address: String,
   city: String,
   country: {
     type: String,
     default: 'Pakistan'
   },
-  // Guest status (kya woh VIP hai?)
+
+  // Elite Status & Preferences
   isVIP: {
     type: Boolean,
     default: false
   },
-  // Guest ki pasand aur napasand (Preferences)
   preferences: {
     roomType: String,
     floorPreference: String,
     specialRequests: String
   },
-  // Admin ke liye extra notes
+
+  // Operational Notes
   notes: String
 }, {
-  // timestamps se "createdAt" aur "updatedAt" khud ban jayenge
-  timestamps: true
+  timestamps: true // Manages createdAt and updatedAt automatically
 });
 
-// Model export karna taake controllers mein use ho sake
 module.exports = mongoose.model('Guest', guestSchema);

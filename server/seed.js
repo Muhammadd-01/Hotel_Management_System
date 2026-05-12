@@ -32,9 +32,9 @@ const seedData = async () => {
       name: 'Admin User',
       email: 'admin@hotel.com',
       password: 'admin123',
-      role: 'admin'
+      role: 'superadmin'
     });
-    console.log('👤 Admin create hua: admin@hotel.com / admin123');
+    console.log('👤 SuperAdmin create hua: admin@hotel.com / admin123');
 
     const staff = await User.create({
       name: 'Staff Member',

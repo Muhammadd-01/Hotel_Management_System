@@ -11,10 +11,25 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  // Load remembered email
+  useState(() => {
+    const savedEmail = localStorage.getItem('luxury_remember_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    addToast('Reset Requested', 'An email with reset instructions has been sent to your registered address (Simulated).', 'info');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,13 +37,18 @@ const Login = () => {
     try {
       const data = await login(email, password);
       if (data.success) {
+        if (rememberMe) {
+          localStorage.setItem('luxury_remember_email', email);
+        } else {
+          localStorage.removeItem('luxury_remember_email');
+        }
+
         addToast('Welcome Back', `Welcome back, ${data.user.name}.`, 'success');
         
         // Role based redirection
-        if (data.user.role === 'admin') {
+        const staffRoles = ['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff'];
+        if (staffRoles.includes(data.user.role)) {
           navigate('/dashboard');
-        } else if (data.user.role === 'staff') {
-          navigate('/bookings'); // Staff usually starts at bookings
         } else {
           navigate('/'); // Guests stay on website
         }
@@ -102,8 +122,8 @@ const Login = () => {
               </div>
               
               <div className="ws-form-options">
-                <label><input type="checkbox" /> Remember Me</label>
-                <a href="#" className="ws-forgot-pass">Forgot Password?</a>
+                <label><input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} /> Remember Me</label>
+                <a href="#" className="ws-forgot-pass" onClick={handleForgotPassword}>Forgot Password?</a>
               </div>
 
               <button type="submit" className="ws-btn ws-btn-primary ws-btn-full" disabled={loading}>

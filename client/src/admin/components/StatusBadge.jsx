@@ -1,8 +1,8 @@
-// StatusBadge.jsx - yeh component status ke hisaab se colored badge dikhata hai
-// reusable component - rooms aur bookings dono mein use hota hai
+// StatusBadge.jsx - Renders a color-coded badge based on the provided status
+// Reusable component used for both Rooms and Bookings
 
 const StatusBadge = ({ status }) => {
-  // status ke hisaab se CSS class decide karo
+  // Determine the CSS class based on the status string
   const getStatusClass = () => {
     switch (status?.toLowerCase()) {
       case 'available':
@@ -10,21 +10,21 @@ const StatusBadge = ({ status }) => {
       case 'completed':
       case 'resolved':
       case 'responded':
-        return 'badge-success';    // green
+        return 'badge-success';    // Emerald/Green
       case 'booked':
       case 'pending':
-        return 'badge-warning';    // orange
+        return 'badge-warning';    // Amber/Orange
       case 'cleaning':
       case 'in progress':
       case 'reviewed':
-        return 'badge-info';       // blue
+        return 'badge-info';       // Blue
       case 'checked-out':
       case 'closed':
-        return 'badge-secondary';  // gray
+        return 'badge-secondary';  // Gray/Slate
       case 'cancelled':
       case 'reported':
       case 'critical':
-        return 'badge-danger';     // red
+        return 'badge-danger';     // Red
       default:
         return 'badge-default';
     }

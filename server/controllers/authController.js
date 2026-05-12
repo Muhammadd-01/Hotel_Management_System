@@ -1,10 +1,10 @@
-// authController.js - yeh controller authentication handle karta hai (login, register, profile)
+// authController.js - Handles authentication and profile management for all users
 const User = require('../models/User');
 const Guest = require('../models/Guest');
 const jwt = require('jsonwebtoken');
 
-// ============ JWT TOKEN GENERATE KARO ============
-// yeh function user ki id se JWT token banata hai
+// ============ JWT TOKEN GENERATOR ============
+// Generates a JSON Web Token using the user's unique ID
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d'
@@ -12,15 +12,14 @@ const generateToken = (id) => {
 };
 
 // ============ LOGIN CONTROLLER ============
-// POST /api/auth/login - user logs in using email and password
+// POST /api/auth/login - authenticates user and issues session token
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // find user by email, include password
+    // Retrieve user and explicitly select password field (excluded by default)
     const user = await User.findOne({ email }).select('+password');
 
-    // if user is not found return error
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -28,7 +27,7 @@ const login = async (req, res) => {
       });
     }
 
-    // match password
+    // Verify password match using model method
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -37,45 +36,43 @@ const login = async (req, res) => {
       });
     }
 
-    // generate token and send response
     const token = generateToken(user._id);
 
     res.json({
       success: true,
-      message: 'Login successful!',
+      message: 'Authentication successful',
       token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profileImage: user.profileImage
       }
     });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred during login'
+      message: 'Internal server error during login'
     });
   }
 };
 
-// ============ REGISTER CONTROLLER ============
-// POST /api/auth/register - admin creates a new staff user
+// ============ STAFF REGISTRATION ============
+// POST /api/auth/register - admin utility to create new staff accounts
 const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'This email is already registered'
+        message: 'Email address is already registered'
       });
     }
 
-    // create a new user
     const user = await User.create({
       name,
       email,
@@ -85,7 +82,7 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User created successfully!',
+      message: 'Personnel account created successfully',
       user: {
         id: user._id,
         name: user.name,
@@ -94,27 +91,26 @@ const register = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred during registration'
+      message: 'Internal server error during registration'
     });
   }
 };
 
-// ============ GUEST SIGNUP (PUBLIC) ============
-// POST /api/auth/signup - creates a new guest account
+// ============ GUEST SELF-SIGNUP ============
+// POST /api/auth/signup - enables guests to create their own accounts
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'This email is already registered' });
+      return res.status(400).json({ success: false, message: 'Email address is already registered' });
     }
 
-    // Create guest user in User model (for authentication)
+    // Create credential account
     const user = await User.create({
       name,
       email,
@@ -122,7 +118,7 @@ const signup = async (req, res) => {
       role: 'guest'
     });
 
-    // Create entry in Guest model for administrative management
+    // Create synchronized administrative guest profile
     const nameParts = name.trim().split(' ');
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(' ') || 'Guest';
@@ -131,16 +127,15 @@ const signup = async (req, res) => {
       firstName,
       lastName,
       email,
-      phone: 'Not provided',
-      idNumber: 'Pending'
+      phone: 'Pending',
+      idNumber: 'Pending Verification'
     });
 
-    // Generate JWT token
     const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
-      message: 'Account created successfully!',
+      message: 'Guest account created successfully',
       token,
       user: {
         id: user._id,
@@ -151,15 +146,14 @@ const signup = async (req, res) => {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ success: false, message: 'An error occurred during signup' });
+    res.status(500).json({ success: false, message: 'Internal server error during signup' });
   }
 };
 
-// ============ GET CURRENT USER ============
-// GET /api/auth/me - return the logged in user profile
+// ============ FETCH CURRENT USER PROFILE ============
+// GET /api/auth/me - returns detailed profile of the authenticated user
 const getMe = async (req, res) => {
   try {
-    // req.user auth middleware ne set kiya hai
     const user = await User.findById(req.user._id);
 
     res.json({
@@ -168,15 +162,72 @@ const getMe = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        phone: user.phone,
+        address: user.address,
+        cnicNumber: user.cnicNumber,
+        cnicFrontImage: user.cnicFrontImage,
+        cnicBackImage: user.cnicBackImage,
+        profileImage: user.profileImage
       }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Profile fetch karne mein error aa gaya'
+      message: 'Failed to retrieve profile data'
     });
   }
 };
 
-module.exports = { login, register, signup, getMe };
+// ============ UPDATE USER PROFILE ============
+// PUT /api/auth/update-profile - allows users to update their personal details
+const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, address, cnicNumber, cnicFrontImage, cnicBackImage, profileImage, password } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Update basic fields
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (address) user.address = address;
+    if (cnicNumber) user.cnicNumber = cnicNumber;
+    if (cnicFrontImage) user.cnicFrontImage = cnicFrontImage;
+    if (cnicBackImage) user.cnicBackImage = cnicBackImage;
+    if (profileImage) user.profileImage = profileImage;
+
+    // Handle password update if provided
+    if (password) {
+      user.password = password;
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        address: user.address,
+        cnicNumber: user.cnicNumber,
+        profileImage: user.profileImage
+      }
+    });
+  } catch (error) {
+    console.error('Update Profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update profile details'
+    });
+  }
+};
+
+module.exports = { login, register, signup, getMe, updateProfile };

@@ -1,56 +1,114 @@
-// guestController.js - yeh controller guest profiles ka CRUD handle karta hai
+// guestController.js - Manages the lifecycle and data of hotel guests
 const Guest = require('../models/Guest');
 
-// GET /api/guests - saare guests ki list
+// ============ FETCH ALL GUEST PROFILES ============
+// GET /api/guests - Retrieves a sorted list of all registered guests
 const getAllGuests = async (req, res) => {
   try {
     const guests = await Guest.find().sort({ createdAt: -1 });
-    res.json({ success: true, count: guests.length, guests });
+    res.json({ 
+      success: true, 
+      count: guests.length, 
+      guests 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Guests fetch mein error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to retrieve guest profiles' 
+    });
   }
 };
 
-// GET /api/guests/:id - ek guest ki detail
+// ============ FETCH SINGLE GUEST PROFILE ============
+// GET /api/guests/:id - Retrieves detailed information for a specific guest
 const getGuestById = async (req, res) => {
   try {
     const guest = await Guest.findById(req.params.id);
-    if (!guest) return res.status(404).json({ success: false, message: 'Guest nahi mila' });
-    res.json({ success: true, guest });
+    if (!guest) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Guest profile not found' 
+      });
+    }
+    res.json({ 
+      success: true, 
+      guest 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Guest fetch mein error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error fetching guest details' 
+    });
   }
 };
 
-// POST /api/guests - naya guest profile banao
+// ============ CREATE NEW GUEST PROFILE ============
+// POST /api/guests - Registers a new guest in the system catalog
 const createGuest = async (req, res) => {
   try {
+    // Body includes identification details, contact info, and preferences
     const guest = await Guest.create(req.body);
-    res.status(201).json({ success: true, message: 'Guest profile ban gaya!', guest });
+    res.status(201).json({ 
+      success: true, 
+      message: 'Guest profile initialized successfully', 
+      guest 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Guest create mein error: ' + error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create guest profile: ' + error.message 
+    });
   }
 };
 
-// PUT /api/guests/:id - guest profile update karo
+// ============ UPDATE GUEST PROFILE ============
+// PUT /api/guests/:id - Modifies existing guest information
 const updateGuest = async (req, res) => {
   try {
-    const guest = await Guest.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!guest) return res.status(404).json({ success: false, message: 'Guest nahi mila' });
-    res.json({ success: true, message: 'Guest update ho gaya!', guest });
+    const guest = await Guest.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true, runValidators: true }
+    );
+    if (!guest) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Guest profile not found' 
+      });
+    }
+    res.json({ 
+      success: true, 
+      message: 'Guest profile updated successfully', 
+      guest 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Guest update mein error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update guest profile details' 
+    });
   }
 };
 
-// DELETE /api/guests/:id - guest delete karo
+// ============ DELETE GUEST PROFILE ============
+// DELETE /api/guests/:id - Permanently removes a guest record from the system
 const deleteGuest = async (req, res) => {
   try {
     const guest = await Guest.findByIdAndDelete(req.params.id);
-    if (!guest) return res.status(404).json({ success: false, message: 'Guest nahi mila' });
-    res.json({ success: true, message: 'Guest delete ho gaya!' });
+    if (!guest) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Guest profile not found' 
+      });
+    }
+    res.json({ 
+      success: true, 
+      message: 'Guest profile deleted from system catalog' 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Guest delete mein error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error during guest profile deletion' 
+    });
   }
 };
 

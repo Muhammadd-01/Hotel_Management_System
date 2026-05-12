@@ -46,8 +46,8 @@ const Login = lazy(() => import('./website/pages/Login'));
 const Register = lazy(() => import('./website/pages/Register'));
 
 // Helpers
-const AdminPage = ({ children }) => (
-  <AdminProtectedRoute><AdminLayout>{children}</AdminLayout></AdminProtectedRoute>
+const AdminPage = ({ children, allowedRoles }) => (
+  <AdminProtectedRoute allowedRoles={allowedRoles}><AdminLayout>{children}</AdminLayout></AdminProtectedRoute>
 );
 
 const WebPage = ({ children }) => (
@@ -78,21 +78,21 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* ====== ADMIN / MANAGEMENT PANEL ROUTES ====== */}
-          <Route path="/dashboard" element={<AdminPage><AdminDashboard /></AdminPage>} />
-          <Route path="/rooms" element={<AdminPage><AdminRooms /></AdminPage>} />
-          <Route path="/bookings" element={<AdminPage><AdminBookings /></AdminPage>} />
-          <Route path="/guests" element={<AdminPage><AdminGuests /></AdminPage>} />
-          <Route path="/invoices" element={<AdminPage><AdminInvoices /></AdminPage>} />
-          <Route path="/services" element={<AdminPage><AdminServices /></AdminPage>} />
-          <Route path="/housekeeping" element={<AdminPage><AdminHousekeeping /></AdminPage>} />
-          <Route path="/maintenance" element={<AdminPage><AdminMaintenance /></AdminPage>} />
-          <Route path="/feedback" element={<AdminPage><AdminFeedback /></AdminPage>} />
-          <Route path="/ai-assistant" element={<AdminPage><AdminAIAssistant /></AdminPage>} />
-          <Route path="/notifications" element={<AdminPage><AdminNotifications /></AdminPage>} />
-          <Route path="/staff" element={<AdminPage><AdminStaffManagement /></AdminPage>} />
-          <Route path="/create-user" element={<AdminPage><AdminCreateUser /></AdminPage>} />
-          <Route path="/addons" element={<AdminPage><AdminAddons /></AdminPage>} />
-          <Route path="/settings" element={<AdminPage><AdminSettings /></AdminPage>} />
+          <Route path="/dashboard" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminDashboard /></AdminPage>} />
+          <Route path="/rooms" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminRooms /></AdminPage>} />
+          <Route path="/bookings" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminBookings /></AdminPage>} />
+          <Route path="/guests" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminGuests /></AdminPage>} />
+          <Route path="/invoices" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminInvoices /></AdminPage>} />
+          <Route path="/services" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminServices /></AdminPage>} />
+          <Route path="/housekeeping" element={<AdminPage allowedRoles={['superadmin', 'manager', 'housekeeping']}><AdminHousekeeping /></AdminPage>} />
+          <Route path="/maintenance" element={<AdminPage allowedRoles={['superadmin', 'manager', 'maintenance']}><AdminMaintenance /></AdminPage>} />
+          <Route path="/feedback" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminFeedback /></AdminPage>} />
+          <Route path="/ai-assistant" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminAIAssistant /></AdminPage>} />
+          <Route path="/notifications" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminNotifications /></AdminPage>} />
+          <Route path="/staff" element={<AdminPage allowedRoles={['superadmin']}><AdminStaffManagement /></AdminPage>} />
+          <Route path="/create-user" element={<AdminPage allowedRoles={['superadmin']}><AdminCreateUser /></AdminPage>} />
+          <Route path="/addons" element={<AdminPage allowedRoles={['superadmin', 'manager']}><AdminAddons /></AdminPage>} />
+          <Route path="/settings" element={<AdminPage allowedRoles={['superadmin']}><AdminSettings /></AdminPage>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -4,8 +4,8 @@ const { getAddons, createAddon, updateAddon, deleteAddon } = require('../control
 const { protect, authorize } = require('../middleware/auth');
 
 router.get('/', getAddons);
-router.post('/', protect, authorize('admin', 'manager'), createAddon);
-router.put('/:id', protect, authorize('admin', 'manager'), updateAddon);
-router.delete('/:id', protect, authorize('admin', 'manager'), deleteAddon);
+router.post('/', protect, authorize('superadmin', 'manager'), createAddon);
+router.put('/:id', protect, authorize('superadmin', 'manager'), updateAddon);
+router.delete('/:id', protect, authorize('superadmin', 'manager'), deleteAddon);
 
 module.exports = router;

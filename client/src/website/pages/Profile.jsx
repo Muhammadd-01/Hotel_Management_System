@@ -5,20 +5,34 @@ import {
   HiOutlineUserCircle, HiOutlineMail, HiOutlinePhone, 
   HiOutlineLocationMarker, HiOutlineCalendar, HiOutlineCreditCard,
   HiOutlineSparkles, HiOutlineShieldCheck, HiOutlineLogout,
-  HiOutlineX, HiOutlineArrowRight, HiOutlineInformationCircle
+  HiOutlineX, HiOutlineArrowRight, HiOutlineInformationCircle,
+  HiOutlinePencil, HiOutlineIdentification, HiOutlinePhotograph, HiOutlineUpload
 } from 'react-icons/hi';
 import { jsPDF } from 'jspdf';
 import API from '../../services/api';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile, fetchMe } = useAuth();
   const { addToast } = useToast();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [invoice, setInvoice] = useState(null);
   const [fetchingInvoice, setFetchingInvoice] = useState(false);
+
+  // Edit Profile Form State
+  const [editForm, setEditForm] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    cnicNumber: '',
+    profileImage: '',
+    cnicFrontImage: '',
+    cnicBackImage: ''
+  });
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchMyBookings = async () => {
@@ -31,8 +45,47 @@ const Profile = () => {
         setLoading(false);
       }
     };
-    if (user) fetchMyBookings();
+    if (user) {
+      fetchMyBookings();
+      setEditForm({
+        name: user.name || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        cnicNumber: user.cnicNumber || '',
+        profileImage: user.profileImage || '',
+        cnicFrontImage: user.cnicFrontImage || '',
+        cnicBackImage: user.cnicBackImage || ''
+      });
+    }
   }, [user]);
+
+  const handleFileChange = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditForm(prev => ({ ...prev, [field]: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setUpdating(true);
+    try {
+      const res = await updateProfile(editForm);
+      if (res.success) {
+        addToast('Success', 'Your royal profile has been updated.', 'success');
+        setShowEditModal(false);
+        await fetchMe(); // Refresh user data
+      }
+    } catch (err) {
+      addToast('Error', 'Failed to update profile. Please try again.', 'error');
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const handleViewDetails = async (booking) => {
     setSelectedBooking(booking);
@@ -138,8 +191,17 @@ const Profile = () => {
             {/* Sidebar: Personal Info */}
             <div className="ws-profile-sidebar reveal">
               <div className="glass-card ws-profile-card">
-                <div className="ws-profile-avatar">
-                  {user.name?.charAt(0).toUpperCase()}
+                <div className="ws-profile-avatar-container">
+                  {user.profileImage ? (
+                    <img src={user.profileImage} alt={user.name} className="ws-profile-avatar-img" />
+                  ) : (
+                    <div className="ws-profile-avatar-placeholder">
+                      {user.name?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <button className="ws-edit-avatar-btn" onClick={() => setShowEditModal(true)}>
+                    <HiOutlinePencil size={16} />
+                  </button>
                 </div>
                 <h3>{user.name}</h3>
                 <span className="ws-member-badge">Royal Member</span>
@@ -149,16 +211,26 @@ const Profile = () => {
                     <HiOutlineMail /> <span>{user.email}</span>
                   </div>
                   <div className="ws-p-item">
-                    <HiOutlinePhone /> <span>+92 300 1234567</span>
+                    <HiOutlinePhone /> <span>{user.phone || 'Phone not set'}</span>
                   </div>
                   <div className="ws-p-item">
-                    <HiOutlineLocationMarker /> <span>Islamabad, Pakistan</span>
+                    <HiOutlineLocationMarker /> <span>{user.address || 'Address not set'}</span>
                   </div>
+                  {user.cnicNumber && (
+                    <div className="ws-p-item">
+                      <HiOutlineIdentification /> <span>CNIC: {user.cnicNumber}</span>
+                    </div>
+                  )}
                 </div>
 
-                <button onClick={logout} className="ws-btn ws-btn-outline-white ws-btn-full" style={{ marginTop: '2rem' }}>
-                  <HiOutlineLogout /> Sign Out
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '2rem' }}>
+                  <button onClick={() => setShowEditModal(true)} className="ws-btn ws-btn-primary ws-btn-full">
+                    <HiOutlinePencil /> Edit Profile
+                  </button>
+                  <button onClick={logout} className="ws-btn ws-btn-outline-white ws-btn-full">
+                    <HiOutlineLogout /> Sign Out
+                  </button>
+                </div>
               </div>
 
               <div className="glass-card ws-perks-card">
@@ -268,6 +340,107 @@ const Profile = () => {
         </div>
       </section>
 
+      {/* ====== EDIT PROFILE MODAL ====== */}
+      {showEditModal && (
+        <div className="ws-modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="ws-modal-content glass-card reveal" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+            <button className="ws-modal-close" onClick={() => setShowEditModal(false)}><HiOutlineX size={24} /></button>
+            
+            <div className="ws-modal-header">
+              <span className="ws-section-tag">Account Settings</span>
+              <h2>Edit Your <span className="ws-accent">Profile</span></h2>
+              <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem' }}>Update your personal details and identity verification documents.</p>
+            </div>
+
+            <form onSubmit={handleUpdateProfile} className="ws-edit-form">
+              <div className="ws-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div className="ws-form-group">
+                  <label>Full Name</label>
+                  <input 
+                    type="text" 
+                    value={editForm.name} 
+                    onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="ws-form-group">
+                  <label>Phone Number</label>
+                  <input 
+                    type="tel" 
+                    value={editForm.phone} 
+                    onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                    placeholder="+92 300 1234567"
+                  />
+                </div>
+                <div className="ws-form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Residential Address</label>
+                  <input 
+                    type="text" 
+                    value={editForm.address} 
+                    onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+                    placeholder="House #, Street, Area, City"
+                  />
+                </div>
+                <div className="ws-form-group">
+                  <label>CNIC Number</label>
+                  <input 
+                    type="text" 
+                    value={editForm.cnicNumber} 
+                    onChange={e => setEditForm({ ...editForm, cnicNumber: e.target.value })}
+                    placeholder="42101-1234567-1"
+                  />
+                </div>
+                <div className="ws-form-group">
+                  <label>Profile Picture</label>
+                  <div className="ws-file-input-wrapper">
+                    <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'profileImage')} id="profile-upload" />
+                    <label htmlFor="profile-upload" className="ws-file-label">
+                      <HiOutlineUpload /> {editForm.profileImage ? 'Change Image' : 'Upload Image'}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="ws-cnic-upload-section" style={{ marginBottom: '2.5rem' }}>
+                <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <HiOutlineIdentification /> Identity Verification (CNIC Images)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div className="ws-cnic-upload-box">
+                    <p>Front Side</p>
+                    <div className="ws-image-preview">
+                      {editForm.cnicFrontImage ? (
+                        <img src={editForm.cnicFrontImage} alt="CNIC Front" />
+                      ) : (
+                        <HiOutlinePhotograph size={40} />
+                      )}
+                      <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'cnicFrontImage')} id="cnic-front" />
+                      <label htmlFor="cnic-front">Upload Front</label>
+                    </div>
+                  </div>
+                  <div className="ws-cnic-upload-box">
+                    <p>Back Side</p>
+                    <div className="ws-image-preview">
+                      {editForm.cnicBackImage ? (
+                        <img src={editForm.cnicBackImage} alt="CNIC Back" />
+                      ) : (
+                        <HiOutlinePhotograph size={40} />
+                      )}
+                      <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'cnicBackImage')} id="cnic-back" />
+                      <label htmlFor="cnic-back">Upload Back</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" className="ws-btn ws-btn-primary ws-btn-full" disabled={updating}>
+                {updating ? 'Updating Your Profile...' : 'Save Profile Changes'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ====== RESERVATION DETAIL MODAL ====== */}
       {showModal && selectedBooking && (
         <div className="ws-modal-overlay" onClick={() => setShowModal(false)}>
@@ -338,20 +511,51 @@ const Profile = () => {
           text-align: center;
           padding: 3rem 2rem !important;
         }
-        .ws-profile-avatar {
-          width: 100px;
-          height: 100px;
+        .ws-profile-avatar-container {
+          position: relative;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 1.5rem;
+        }
+        .ws-profile-avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 3px solid var(--ws-accent);
+          box-shadow: 0 0 30px var(--ws-accent-glow);
+        }
+        .ws-profile-avatar-placeholder {
+          width: 100%;
+          height: 100%;
           background: var(--ws-accent);
           color: var(--ws-primary);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 2.5rem;
+          font-size: 3rem;
           font-weight: 800;
-          margin: 0 auto 1.5rem;
           box-shadow: 0 0 30px var(--ws-accent-glow);
         }
+        .ws-edit-avatar-btn {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          background: var(--ws-accent);
+          color: var(--ws-primary);
+          border: none;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+          transition: 0.3s;
+        }
+        .ws-edit-avatar-btn:hover { transform: scale(1.1); }
         .ws-member-badge {
           display: inline-block;
           padding: 5px 15px;
@@ -500,6 +704,75 @@ const Profile = () => {
         .ws-inv-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: var(--ws-text-muted); }
         .ws-inv-divider { height: 1px; background: var(--ws-glass-border); margin: 15px 0; }
         .ws-inv-total { color: white; font-weight: bold; font-size: 1.1rem; }
+
+        /* Edit Form Styles */
+        .ws-edit-form .ws-form-group label {
+          display: block;
+          margin-bottom: 8px;
+          color: var(--ws-text-muted);
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        .ws-edit-form .ws-form-group input {
+          width: 100%;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid var(--ws-glass-border);
+          padding: 12px 16px;
+          border-radius: 12px;
+          color: white;
+          outline: none;
+          transition: 0.3s;
+        }
+        .ws-edit-form .ws-form-group input:focus {
+          border-color: var(--ws-accent);
+          background: rgba(255,255,255,0.08);
+        }
+        .ws-file-input-wrapper { position: relative; }
+        .ws-file-input-wrapper input { opacity: 0; position: absolute; inset: 0; cursor: pointer; }
+        .ws-file-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid var(--ws-glass-border);
+          padding: 12px;
+          border-radius: 12px;
+          cursor: pointer;
+          color: white;
+          font-size: 0.9rem;
+          transition: 0.3s;
+        }
+        .ws-file-label:hover { background: rgba(255,255,255,0.1); border-color: var(--ws-accent); }
+
+        .ws-cnic-upload-box p { font-size: 0.75rem; color: var(--ws-text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .ws-image-preview {
+          height: 150px;
+          background: rgba(255,255,255,0.03);
+          border: 2px dashed var(--ws-glass-border);
+          border-radius: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          transition: 0.3s;
+        }
+        .ws-image-preview:hover { border-color: var(--ws-accent); }
+        .ws-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .ws-image-preview input { opacity: 0; position: absolute; inset: 0; cursor: pointer; z-index: 2; }
+        .ws-image-preview label {
+          position: absolute;
+          bottom: 10px;
+          background: rgba(0,0,0,0.6);
+          padding: 4px 12px;
+          border-radius: 100px;
+          font-size: 0.7rem;
+          color: white;
+          z-index: 1;
+        }
 
         @media (max-width: 992px) {
           .ws-profile-grid { grid-template-columns: 1fr; }

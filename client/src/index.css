@@ -1,4 +1,4 @@
-/* index.css - yeh main stylesheet hai poori app ki */
+/* index.css - Main stylesheet for the entire application */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 /* ============ CSS VARIABLES / PREMIUM PALETTE ============ */
@@ -8,20 +8,20 @@
   --accent: #00D1FF; /* Premium Cyan */
   --accent-soft: rgba(0, 209, 255, 0.1);
   --accent-hover: #00B8E6;
-  --bg: #F8FAFC;
-  --card: #FFFFFF;
-  --glass: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --text-primary: #0F172A;
-  --text-secondary: #64748B;
+  --bg: #0B0F1A; /* Premium Dark BG */
+  --card: #1E293B; /* Dark Card */
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
   --error: #EF4444;
   --success: #10B981;
   --warning: #F59E0B;
   --info: #3B82F6;
-  --border: #E2E8F0;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
   --radius: 16px;
   --radius-sm: 10px;
   --sidebar-width: 280px;
@@ -178,9 +178,54 @@ input:focus, select:focus, textarea:focus {
 }
 
 .user-role {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
-  text-transform: capitalize;
+  font-size: 0.7rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--accent);
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-weight: 700;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ============ PREMIUM DASHBOARD STYLES ============ */
+.dashboard-header-premium {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  padding: 40px;
+  border-radius: var(--radius);
+  color: white;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-header-premium::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -10%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.dashboard-header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header-premium h1 {
+  font-size: 2.2rem !important;
+  color: white !important;
+  margin-bottom: 8px;
+}
+
+.dashboard-header-premium .page-subtitle {
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 1rem !important;
 }
 
 .logout-btn {
@@ -211,7 +256,7 @@ input:focus, select:focus, textarea:focus {
 .page-header h1 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -321,9 +366,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 .card-header h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
 }
 
 /* ============ STATS GRID ============ */
@@ -362,7 +408,7 @@ input:focus, select:focus, textarea:focus {
 .stat-info h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
@@ -388,10 +434,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 .chart-card h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
 }
 
 /* ============ TABLE ============ */
@@ -403,25 +449,25 @@ input:focus, select:focus, textarea:focus {
 }
 
 .data-table th {
-  background: var(--bg);
-  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px 16px;
   text-align: left;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   border-bottom: 1px solid var(--border);
 }
 
 .data-table td {
-  padding: 14px 16px;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
   color: var(--text-primary);
 }
 
-.data-table tbody tr:hover { background: rgba(0,194,168,0.03); }
+.data-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
 .data-table tbody tr:last-child td { border-bottom: none; }
 
 .empty-state {
@@ -443,12 +489,16 @@ input:focus, select:focus, textarea:focus {
   text-transform: capitalize;
 }
 
-.badge-success { background: rgba(16,185,129,0.12); color: #059669; }
-.badge-warning { background: rgba(245,158,11,0.12); color: #D97706; }
-.badge-info { background: rgba(59,130,246,0.12); color: #2563EB; }
-.badge-danger { background: rgba(239,68,68,0.12); color: #DC2626; }
-.badge-secondary { background: rgba(107,114,128,0.12); color: #4B5563; }
-.badge-default { background: var(--border); color: var(--text-secondary); }
+.badge-success { background: rgba(16,185,129,0.12); color: #10B981; }
+.badge-warning { background: rgba(245,158,11,0.12); color: #F59E0B; }
+.badge-info { background: rgba(59,130,246,0.12); color: #3B82F6; }
+.badge-danger { background: rgba(239,68,68,0.12); color: #EF4444; }
+.badge-secondary { background: rgba(107,114,128,0.12); color: #94A3B8; }
+.badge-default { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); }
+
+.badge-success-light { background: rgba(16, 185, 129, 0.08); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.15); }
+.badge-info-light { background: rgba(59, 130, 246, 0.08); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.15); }
+.badge-warning-light { background: rgba(245, 158, 11, 0.08); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.15); }
 
 /* ============ ALERTS ============ */
 .alert {
@@ -537,7 +587,7 @@ input:focus, select:focus, textarea:focus {
 .modal-header h2 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-primary);
 }
 
 .modal-form { padding: 24px; }
@@ -616,7 +666,7 @@ input:focus, select:focus, textarea:focus {
 .login-form-wrapper h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
@@ -670,8 +720,8 @@ input:focus, select:focus, textarea:focus {
 
 .ai-search-header h3 {
   font-size: 1.1rem;
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .ai-search-header p {
@@ -747,7 +797,7 @@ input:focus, select:focus, textarea:focus {
 .ai-summary-card h3 {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-primary);
   margin-bottom: 16px;
 }
 
@@ -790,7 +840,7 @@ input:focus, select:focus, textarea:focus {
 
 .ai-message p {
   font-size: 0.9rem;
-  color: var(--primary);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -1005,3 +1055,93 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
+
+/* ============ ROLE-SPECIFIC DASHBOARD STYLES ============ */
+.mt-24 { margin-top: 24px; }
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.operation-item {
+  background: var(--bg);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.operation-item h4 {
+  font-size: 1.8rem;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.operation-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.quick-actions-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-link {
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-link:hover { opacity: 0.8; text-decoration: underline; }
+
+.task-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.task-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-info strong {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.task-info span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.receptionist-dashboard .quick-actions-row .btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 14px;
+}
+
+.housekeeping-dashboard .alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-sm);
+}
+

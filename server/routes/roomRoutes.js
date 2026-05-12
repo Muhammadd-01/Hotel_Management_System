@@ -16,12 +16,12 @@ router.get('/:id', getRoomById);
 router.use(protect);
 
 // POST /api/rooms - naya room add karo (sirf admin)
-router.post('/', authorize('admin'), roomRules, createRoom);
+router.post('/', authorize('superadmin'), roomRules, createRoom);
 
 // PUT /api/rooms/:id - room update karo (admin + staff)
 router.put('/:id', updateRoom);
 
 // DELETE /api/rooms/:id - room delete karo (sirf admin)
-router.delete('/:id', authorize('admin'), deleteRoom);
+router.delete('/:id', authorize('superadmin'), deleteRoom);
 
 module.exports = router;

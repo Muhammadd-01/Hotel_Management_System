@@ -1,11 +1,11 @@
-// Sidebar.jsx - Yeh component navigation menu aur user info dikhata hai
+// Sidebar.jsx - Main navigation sidebar and user profile component
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   HiOutlineViewGrid, HiOutlineKey, HiOutlineCalendar, HiOutlineLightBulb,
   HiOutlineLogout, HiOutlineUserAdd, HiOutlineUsers, HiOutlineDocumentText,
   HiOutlineCog, HiOutlineStar, HiOutlineBell, HiOutlineUserGroup, HiOutlineHome,
-  HiOutlinePlus
+  HiOutlinePlus, HiOutlineShieldCheck
 } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import API from '../../services/api';
@@ -13,22 +13,22 @@ import ConfirmModal from './ConfirmModal';
 import { useToast } from '../../context/ToastContext';
 
 const Sidebar = () => {
-  const { user, logout, isAdmin } = useAuth(); // Auth context se user details aur functions lena
+  const { user, logout, isAdmin } = useAuth(); // Access auth state and functions
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const [unread, setUnread] = useState(0); // Unread notifications ka count
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Logout confirmation modal
+  const [unread, setUnread] = useState(0); // Track unread notifications count
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // Toggle logout confirmation
 
-  // ============ NOTIFICATIONS COUNT FETCH KARNA ============
+  // ============ FETCH NOTIFICATION COUNT ============
   useEffect(() => {
     const fetchNotifs = async () => {
       try {
         const res = await API.get('/notifications');
         if (res.data.success) setUnread(res.data.unreadCount);
-      } catch (err) { /* ignore errors */ }
+      } catch (err) { /* silent fail */ }
     };
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 30000); // Har 30 seconds baad refresh karo
+    const interval = setInterval(fetchNotifs, 30000); // Auto-refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -60,10 +60,13 @@ const Sidebar = () => {
         <NavLink to="/" className="nav-link">
           <HiOutlineHome className="nav-icon" /><span>Back to Website</span>
         </NavLink>
+        <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <HiOutlineViewGrid className="nav-icon" /><span>Dashboard</span>
+        </NavLink>
         {/* Role-Specific Links */}
         
-        {/* Receptionist & Admin: Bookings, Guests, Invoices */}
-        {(['admin', 'manager', 'receptionist'].includes(user?.role)) && (
+        {/* Receptionist & Admin & Manager: Bookings, Guests, Invoices */}
+        {(['superadmin', 'manager', 'receptionist'].includes(user?.role)) && (
           <>
             <NavLink to="/rooms" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <HiOutlineKey className="nav-icon" /><span>Rooms</span>
@@ -92,15 +95,15 @@ const Sidebar = () => {
           </>
         )}
         
-        {/* Housekeeping & Admin */}
-        {(['admin', 'manager', 'housekeeping'].includes(user?.role)) && (
+        {/* Housekeeping & Admin & Manager */}
+        {(['superadmin', 'manager', 'housekeeping'].includes(user?.role)) && (
           <NavLink to="/housekeeping" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <HiOutlineCog className="nav-icon" /><span>Housekeeping</span>
           </NavLink>
         )}
 
-        {/* Maintenance & Admin */}
-        {(['admin', 'manager', 'maintenance'].includes(user?.role)) && (
+        {/* Maintenance & Admin & Manager */}
+        {(['superadmin', 'manager', 'maintenance'].includes(user?.role)) && (
           <NavLink to="/maintenance" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <HiOutlineCog className="nav-icon" /><span>Maintenance</span>
           </NavLink>
@@ -127,22 +130,28 @@ const Sidebar = () => {
           {unread > 0 && <span className="notif-badge">{unread}</span>}
         </NavLink>
 
-        {/* Admin & Manager Management Links */}
-        {(user?.role === 'admin' || user?.role === 'manager') && (
+        {/* Management Links */}
+        {(['superadmin', 'manager'].includes(user?.role)) && (
           <>
             <div className="nav-divider"></div>
-            <NavLink to="/staff" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <HiOutlineUserGroup className="nav-icon" /><span>Staff Members</span>
-            </NavLink>
-            <NavLink to="/create-user" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <HiOutlineUserAdd className="nav-icon" /><span>Register Staff</span>
-            </NavLink>
+            {user?.role === 'superadmin' && (
+              <>
+                <NavLink to="/staff" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                  <HiOutlineUserGroup className="nav-icon" /><span>Personnel Directory</span>
+                </NavLink>
+                <NavLink to="/create-user" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                  <HiOutlineUserAdd className="nav-icon" /><span>Enroll Personnel</span>
+                </NavLink>
+              </>
+            )}
             <NavLink to="/addons" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <HiOutlinePlus className="nav-icon" /><span>Service Catalog</span>
             </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <HiOutlineCog className="nav-icon" /><span>System Settings</span>
-            </NavLink>
+            {user?.role === 'superadmin' && (
+              <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                <HiOutlineCog className="nav-icon" /><span>System Settings</span>
+              </NavLink>
+            )}
           </>
         )}
       </nav>
@@ -153,7 +162,10 @@ const Sidebar = () => {
           <div className="user-avatar">{user?.name?.charAt(0).toUpperCase()}</div>
           <div className="user-details">
             <p className="user-name">{user?.name}</p>
-            <span className="user-role">{user?.role}</span>
+            <span className="user-role">
+              {user?.role === 'superadmin' && <HiOutlineShieldCheck style={{ verticalAlign: 'middle', marginRight: '4px' }} />}
+              {user?.role?.toUpperCase()}
+            </span>
           </div>
         </div>
         <button onClick={handleLogoutClick} className="logout-btn" title="Logout"><HiOutlineLogout /></button>

@@ -5,7 +5,7 @@ const User = require('../models/User');
 const getAllStaff = async (req, res) => {
   try {
     // Sirf admin aur staff roles ko fetch karein, guests ko nahi
-    const staff = await User.find({ role: { $in: ['admin', 'staff'] } })
+    const staff = await User.find({ role: { $in: ['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff'] } })
       .select('-password')
       .sort({ createdAt: -1 });
     res.json({ success: true, count: staff.length, staff });
@@ -49,7 +49,7 @@ const deactivateStaff = async (req, res) => {
 // GET /api/staff/public - Sirf public info (About page ke liye)
 const getPublicStaff = async (req, res) => {
   try {
-    const staff = await User.find({ role: { $in: ['admin', 'staff'] } })
+    const staff = await User.find({ role: { $in: ['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff'] } })
       .select('name role') // Email aur sensitive info nahi chahiye public ko
       .limit(10);
     res.json({ success: true, staff });

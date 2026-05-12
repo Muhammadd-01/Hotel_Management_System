@@ -1,14 +1,14 @@
-// Notifications.jsx - Yeh page system ke alerts aur alerts history dikhata hai
+// Notifications.jsx - Displays system alerts, operational updates, and notification history
 import { useState, useEffect } from 'react';
 import API from '../../services/api';
 import { HiOutlineBell, HiCheck, HiTrash } from 'react-icons/hi';
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]); // Alerts ki list
+  const [notifications, setNotifications] = useState([]); // List of system alerts
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState('');
 
-  // ============ NOTIFICATIONS LOAD KARNA ============
+  // ============ NOTIFICATION RETRIEVAL LOGIC ============
   const fetchNotifications = async () => {
     try {
       const res = await API.get('/notifications');
@@ -21,25 +21,25 @@ const Notifications = () => {
 
   useEffect(() => { fetchNotifications(); }, []);
 
-  // ============ EK NOTIFICATION KO "READ" MARK KARNA ============
+  // ============ MARK SINGLE NOTIFICATION AS READ ============
   const markAsRead = async (id) => {
     try {
       await API.put(`/notifications/${id}/read`);
-      fetchNotifications(); // List refresh karo
+      fetchNotifications(); // Refresh the list to update status
     } catch (err) { console.error(err); }
   };
 
-  // ============ SAARI NOTIFICATIONS KO "READ" MARK KARNA ============
+  // ============ BATCH MARK AS READ ============
   const markAllRead = async () => {
     try {
       await API.put('/notifications/read-all');
-      setSuccess('Sari notifications read ho gayin!');
+      setSuccess('All notifications marked as read!');
       fetchNotifications();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) { console.error(err); }
   };
 
-  // ============ DELETE KARNA ============
+  // ============ DELETE NOTIFICATION ============
   const deleteNotification = async (id) => {
     try {
       await API.delete(`/notifications/${id}`);
@@ -52,9 +52,9 @@ const Notifications = () => {
   return (
     <div className="notifications-page">
       <div className="page-header">
-        <div><h1><HiOutlineBell className="header-icon" /> Notifications</h1><p className="page-subtitle">System ke latest alerts aur updates yahan dekhein</p></div>
+        <div><h1><HiOutlineBell className="header-icon" /> Notifications</h1><p className="page-subtitle">View the latest system alerts and operational updates</p></div>
         {notifications.length > 0 && (
-          <button className="btn btn-secondary" onClick={markAllRead}><HiCheck /> Mark All Read</button>
+          <button className="btn btn-secondary" onClick={markAllRead}><HiCheck /> Mark All as Read</button>
         )}
       </div>
 
@@ -77,7 +77,11 @@ const Notifications = () => {
               <button className="btn-icon btn-danger-light" onClick={() => deleteNotification(n._id)} title="Delete"><HiTrash /></button>
             </div>
           </div>
-        )) : <div className="card glass-card empty-notif"><p className="text-muted">Koi notification nahi hai</p></div>}
+        )) : (
+          <div className="card glass-card empty-notif">
+            <p className="text-muted">You have no new notifications.</p>
+          </div>
+        )}
       </div>
     </div>
   );

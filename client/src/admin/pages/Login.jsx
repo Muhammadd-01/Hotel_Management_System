@@ -1,37 +1,35 @@
-// Login.jsx - Yeh app ka entry point hai jahan staff login karta hai
+// Login.jsx - Primary authentication entry point for management personnel and guests
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import API from '../../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState(''); // Email input state
   const [password, setPassword] = useState(''); // Password input state
-  const [error, setError] = useState(''); // Error handling
+  const [error, setError] = useState(''); // Local error handling
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth(); // Auth context se login function lana
+  const { login } = useAuth(); // Access login utility from Global Auth Context
   const { addToast } = useToast();
   const navigate = useNavigate();
 
-  // ============ LOGIN SUBMIT KARNE KA LOGIC ============
+  // ============ AUTHENTICATION SUBMISSION LOGIC ============
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      // Auth context wala login function use karein jo API call handle karta hai
+      // Execute authentication via context provider which handles session storage
       const data = await login(email, password);
       
       if (data.success) {
-        // Dashboard par bhej dena
-        addToast('Login Successful', `Welcome back, ${data.user.name}!`, 'success');
-        navigate('/dashboard');
+        addToast('Authentication Successful', `Welcome back to LuxuryStay, ${data.user.name}!`, 'success');
+        navigate('/dashboard'); // Direct user to their role-specific dashboard
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login nahi ho saka. Email ya password check karein.');
+      setError(err.response?.data?.message || 'Authentication failed. Please verify your email and password.');
     } finally {
       setLoading(false);
     }
@@ -40,50 +38,50 @@ const Login = () => {
   return (
     <div className="login-page">
       <div className="login-container">
-        {/* Left Side - Brand Branding */}
+        {/* Brand Identity Section */}
         <div className="login-brand">
           <div className="brand-content">
             <span className="brand-icon">🏨</span>
             <h1>LuxuryStay HMS</h1>
-            <p>The Ultimate AI-Powered Solution for Luxury Hospitality Management.</p>
+            <p>The Ultimate AI-Powered Ecosystem for Premium Hospitality Management.</p>
             <div className="brand-features">
-              <div className="feature-item">✓ AI-Powered Room Search</div>
-              <div className="feature-item">✓ Automated Billing & Tax</div>
-              <div className="feature-item">✓ Staff & Task Management</div>
+              <div className="feature-item">✓ AI-Driven Guest Insights</div>
+              <div className="feature-item">✓ Real-time Inventory Analytics</div>
+              <div className="feature-item">✓ Automated Billing & Revenue Management</div>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Login Form */}
+        {/* Credential Entry Section */}
         <div className="login-form-section">
           <div className="login-form-wrapper">
-            <h2>Welcome Back</h2>
-            <p className="login-subtitle">Apne credentials ke saath login karein.</p>
+            <h2>Portal Access</h2>
+            <p className="login-subtitle">Enter your authorized credentials to continue.</p>
             
             {error && <div className="alert alert-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="login-form">
               <div className="form-group">
-                <label>Email Address</label>
-                <input type="email" placeholder="admin@hotel.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <label>Institutional Email</label>
+                <input type="email" placeholder="personnel@luxurystay.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="form-group">
-                <label>Password</label>
+                <label>Security Password</label>
                 <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
               <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                {loading ? 'Logging in...' : 'Sign In to Dashboard'}
+                {loading ? 'Verifying Identity...' : 'Authorize & Sign In'}
               </button>
             </form>
 
             <div className="login-footer">
-              <p>New Guest? <Link to="/register">Create an account</Link></p>
+              <p>Planning a stay? <Link to="/register">Register as a Guest</Link></p>
             </div>
 
             <div className="demo-credentials">
-              <p className="demo-title">Demo Credentials (testing ke liye):</p>
-              <p><strong>Admin:</strong> admin@hotel.com / admin123</p>
-              <p><strong>Staff:</strong> staff@hotel.com / staff123</p>
+              <p className="demo-title">System Administrator Access:</p>
+              <p><strong>SuperAdmin:</strong> admin@hotel.com / admin123</p>
+              <p><strong>Operational Staff:</strong> staff@hotel.com / staff123</p>
             </div>
           </div>
         </div>

@@ -1,12 +1,12 @@
-// Layout.jsx - yeh component main layout wrap karta hai (sidebar + content area)
+// Layout.jsx - Main wrapper for the admin panel layout (Sidebar + Content Area)
 import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
   return (
     <div className="app-layout">
-      {/* Left side mein sidebar */}
+      {/* Navigation Sidebar */}
       <Sidebar />
-      {/* Right side mein main content */}
+      {/* Main Content Area */}
       <main className="main-content">
         {children}
       </main>

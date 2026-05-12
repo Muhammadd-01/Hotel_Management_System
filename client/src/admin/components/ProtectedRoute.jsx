@@ -1,27 +1,32 @@
-// ProtectedRoute.jsx - yeh component sirf logged-in users ko page dikhata hai
+// ProtectedRoute.jsx - Ensures only authenticated users can access specific pages
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-// agar user logged in nahi hai to login page pe bhejo
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+// Gatekeeper component to verify session and user roles before rendering children
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, loading, user } = useAuth();
 
-  // jab tak loading ho raha hai, spinner dikhao
+  // Display a loading state while authentication status is being determined
   if (loading) {
     return (
       <div className="loading-screen">
         <div className="spinner"></div>
-        <p>Loading...</p>
+        <p>Verifying Credentials...</p>
       </div>
     );
   }
 
-  // agar authenticated nahi hai to login pe redirect karo
+  // Redirect to login if the user is not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // authenticated hai to children render karo
+  // Redirect to dashboard if the user's role is not authorized for this specific route
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Render the protected component if all checks pass
   return children;
 };
 

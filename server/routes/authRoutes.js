@@ -1,20 +1,23 @@
-// authRoutes.js - yeh file authentication ke routes define karti hai
+// authRoutes.js - Defines the API endpoints for authentication and user management
 const express = require('express');
 const router = express.Router();
-const { login, register, signup, getMe } = require('../controllers/authController');
+const { login, register, signup, getMe, updateProfile } = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/auth');
 const { loginRules, registerRules } = require('../middleware/validate');
 
-// POST /api/auth/login - user login karo
+// Public access: Authenticate existing users
 router.post('/login', loginRules, login);
 
-// POST /api/auth/signup - naya guest account (public)
+// Public access: Enroll new guest accounts
 router.post('/signup', registerRules, signup);
 
-// POST /api/auth/register - admin new user create kare (protected + admin only)
-router.post('/register', protect, authorize('admin'), registerRules, register);
+// Admin only: Register new staff or management accounts
+router.post('/register', protect, authorize('superadmin'), registerRules, register);
 
-// GET /api/auth/me - apni profile dekho (protected)
+// Authenticated access: Retrieve current user profile
 router.get('/me', protect, getMe);
+
+// Authenticated access: Update personal profile details (CNIC, Address, Images)
+router.put('/update-profile', protect, updateProfile);
 
 module.exports = router;

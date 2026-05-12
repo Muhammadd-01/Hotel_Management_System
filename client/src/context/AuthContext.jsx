@@ -1,20 +1,20 @@
-// AuthContext.jsx - yeh file authentication state manage karti hai poori app mein
+// AuthContext.jsx - Manages the global authentication state for the entire application
 import { createContext, useContext, useState, useEffect } from 'react';
 import API from '../services/api';
 
-// Auth context banao - yeh poori app mein user state share karta hai
+// Create Auth context to share user state throughout the app
 const AuthContext = createContext(null);
 
 // ============ AUTH PROVIDER COMPONENT ============
-// yeh component apne children ko auth state provide karta hai
+// Provides authentication state and functions to its children
 export const AuthProvider = ({ children }) => {
-  // user state - logged in user ka data
+  // User state - stores the logged-in user's data
   const [user, setUser] = useState(null);
-  // loading state - jab tak user verify ho raha hai
+  // Loading state - tracks if the user's session is being verified
   const [loading, setLoading] = useState(true);
 
-  // ============ APP LOAD PE USER CHECK KARO ============
-  // jab app load ho to localStorage se user data check karo
+  // ============ INITIAL AUTH CHECK ============
+  // Check for existing session in localStorage when the app loads
   useEffect(() => {
     const checkUser = async () => {
       const token = localStorage.getItem('token');
@@ -22,11 +22,12 @@ export const AuthProvider = ({ children }) => {
 
       if (token && savedUser) {
         try {
-          // server se verify karo ke token valid hai
+          // Verify token validity with the server and fetch full profile
           const res = await API.get('/auth/me');
           setUser(res.data.user);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
         } catch (error) {
-          // agar token invalid hai to clear karo
+          // Clear session data if token is invalid or expired
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setUser(null);
@@ -38,12 +39,27 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
+  // ============ FETCH LATEST USER DATA ============
+  const fetchMe = async () => {
+    try {
+      const res = await API.get('/auth/me');
+      if (res.data.success) {
+        setUser(res.data.user);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      }
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
+  };
+
   // ============ LOGIN FUNCTION ============
-  // yeh function user ko login karta hai
+  // Authenticates a user and saves session data
   const login = async (email, password) => {
     const res = await API.post('/auth/login', { email, password });
     if (res.data.success) {
-      // token aur user data localStorage mein save karo
+      // Persist token and user data in localStorage
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setUser(res.data.user);
@@ -52,7 +68,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ============ SIGNUP FUNCTION ============
-  // yeh function naya guest account banata hai
+  // Registers a new guest account
   const signup = async (name, email, password) => {
     const res = await API.post('/auth/signup', { name, email, password });
     if (res.data.success) {
@@ -63,22 +79,36 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  // ============ UPDATE PROFILE FUNCTION ============
+  // Updates the personal details of the current user
+  const updateProfile = async (profileData) => {
+    const res = await API.put('/auth/update-profile', profileData);
+    if (res.data.success) {
+      // Refresh local user state with updated data
+      setUser(prev => ({ ...prev, ...res.data.user }));
+      localStorage.setItem('user', JSON.stringify({ ...user, ...res.data.user }));
+    }
+    return res.data;
+  };
+
   // ============ LOGOUT FUNCTION ============
-  // yeh function user ko logout karta hai
+  // Terminates the user session and clears local data
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
   };
 
-  // context value mein saari auth functions aur state pass karo
+  // Pass authentication functions and state through context
   const value = {
     user,
     login,
     signup,
     logout,
+    updateProfile,
+    fetchMe,
     loading,
-    isAdmin: user?.role === 'admin',
+    isAdmin: user?.role === 'superadmin',
     isAuthenticated: !!user
   };
 
@@ -90,11 +120,11 @@ export const AuthProvider = ({ children }) => {
 };
 
 // ============ CUSTOM HOOK ============
-// yeh hook kisi bhi component mein auth state access karne ke liye
+// Access the auth state from any functional component
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth ko AuthProvider ke andar use karo');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

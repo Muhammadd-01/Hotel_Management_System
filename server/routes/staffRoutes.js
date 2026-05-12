@@ -7,7 +7,7 @@ const { protect, authorize } = require('../middleware/auth');
 router.get('/public', getPublicStaff); // Publicly accessible
 
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('superadmin'));
 router.get('/', getAllStaff);
 router.put('/:id', updateStaff);
 router.delete('/:id', deactivateStaff);

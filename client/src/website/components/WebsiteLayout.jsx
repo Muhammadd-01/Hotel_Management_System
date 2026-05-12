@@ -137,8 +137,8 @@ const WebsiteLayout = ({ children }) => {
           <div className="ws-nav-actions">
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-                {user.role === 'admin' && (
-                  <Link to="/dashboard" className="ws-link" style={{ fontSize: '0.85rem' }}>Admin Panel</Link>
+                {['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff'].includes(user.role) && (
+                  <Link to="/dashboard" className="ws-link" style={{ fontSize: '0.85rem' }}>Management Panel</Link>
                 )}
                 <Link to="/profile" className="ws-profile-trigger" title="Your Royal Profile" style={{ color: 'var(--ws-text)', display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
                   <HiOutlineUserCircle size={28} />
