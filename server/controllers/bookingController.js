@@ -1,6 +1,19 @@
-// bookingController.js - Room bookings handle karne ka dimagh (logic)
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
+
+// @desc    Logged-in user ki bookings lana
+// @route   GET /api/bookings/my-bookings
+const getMyBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ createdBy: req.user.id })
+      .populate('room', 'roomNumber type price')
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, bookings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Bookings lane mein masla hua' });
+  }
+};
 
 // @desc    Nayi booking create karna
 // @route   POST /api/bookings
@@ -159,6 +172,7 @@ module.exports = {
   createBooking,
   getAllBookings,
   getBookingById,
+  getMyBookings,
   checkoutBooking,
   cancelBooking
 };

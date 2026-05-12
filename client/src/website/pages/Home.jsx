@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../../services/api';
 import { 
   HiOutlineArrowRight, HiOutlineShieldCheck, HiOutlineSparkles, 
   HiOutlineStar, HiOutlineGlobe, HiOutlineClock, 
   HiOutlineHeart, HiOutlineTicket, HiOutlineCamera,
-  HiOutlineMusicNote, HiOutlineLightningBolt
+  HiOutlineMusicNote, HiOutlineLightningBolt,
+  HiOutlineCalendar, HiOutlineUserGroup, HiOutlineSearch,
+  HiOutlineOfficeBuilding, HiOutlineKey, HiOutlineBadgeCheck,
+  HiOutlineLocationMarker, HiOutlineChatAlt2
 } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 
@@ -56,16 +59,34 @@ const StatItem = ({ end, label, suffix = '' }) => {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [featuredRooms, setFeaturedRooms] = useState([]);
   const [loadingRooms, setLoadingRooms] = useState(true);
+
+  // Booking Search State
+  const [searchData, setSearchData] = useState({
+    checkIn: '',
+    checkOut: '',
+    guests: '1',
+    roomType: 'all'
+  });
+
+  const handleSearchChange = (e) => {
+    setSearchData({ ...searchData, [e.target.name]: e.target.value });
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchData);
+    navigate(`/rooms-explore?${params.toString()}`);
+  };
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
         const res = await API.get('/rooms');
         if (res.data.success) {
-          // Get first 3 available rooms
           setFeaturedRooms(res.data.rooms.filter(r => r.status === 'Available').slice(0, 3));
         }
       } catch (err) {
@@ -93,21 +114,15 @@ const Home = () => {
 
   return (
     <div className="ws-home">
-      {/* ... rest of the component remains same until Signature Accommodations ... */}
-      {/* ====== REFINED CINEMATIC HERO ====== */}
-      <section className="ws-hero-centered">
-        {/* Single High-Quality Cinematic Video */}
-        <div className="ws-hero-video-bg">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline 
-            className="ws-hero-video-full"
-            poster="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1600&q=80"
-          >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-luxury-hotel-lobby-with-a-large-chandelier-42352-large.mp4" type="video/mp4" />
-          </video>
+      <section className="ws-hero-centered" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920&q=80" 
+            alt="Luxury Stay Lobby"
+            className="ws-hero-image-element"
+            style={{ opacity: 0.6 }}
+          />
+          <div className="ws-hero-gradient-overlay"></div>
         </div>
         
         <div className="ws-hero-overlay-dark"></div>
@@ -135,6 +150,60 @@ const Home = () => {
               <StatItem end={100} label="AI Support" suffix="%" />
             </div>
 
+            {/* ====== PREMIUM BOOKING SEARCH BAR ====== */}
+            <div className="ws-hero-booking-search glass-card reveal" style={{ animationDelay: '0.3s' }}>
+              <form onSubmit={handleSearchSubmit} className="ws-search-form-v2">
+                <div className="ws-search-field">
+                  <label><HiOutlineCalendar /> Check-in</label>
+                  <input 
+                    type="date" 
+                    name="checkIn" 
+                    value={searchData.checkIn}
+                    onChange={handleSearchChange}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div className="ws-search-divider"></div>
+                <div className="ws-search-field">
+                  <label><HiOutlineCalendar /> Check-out</label>
+                  <input 
+                    type="date" 
+                    name="checkOut" 
+                    value={searchData.checkOut}
+                    onChange={handleSearchChange}
+                    min={searchData.checkIn || new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div className="ws-search-divider"></div>
+                <div className="ws-search-field">
+                  <label><HiOutlineUserGroup /> Guests</label>
+                  <select name="guests" value={searchData.guests} onChange={handleSearchChange}>
+                    <option value="1">1 Guest</option>
+                    <option value="2">2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4+ Guests</option>
+                  </select>
+                </div>
+                <div className="ws-search-divider"></div>
+                <div className="ws-search-field">
+                  <label><HiOutlineOfficeBuilding /> Room Type</label>
+                  <select name="roomType" value={searchData.roomType} onChange={handleSearchChange}>
+                    <option value="all">Any Type</option>
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                  </select>
+                </div>
+                <button type="submit" className="ws-search-btn-v2">
+                  <HiOutlineSearch size={20} />
+                  <span>Explore Rooms</span>
+                </button>
+              </form>
+            </div>
+
             <div className="ws-hero-centered-actions">
               <Link to="/rooms-explore" className="ws-btn ws-btn-primary ws-btn-lg">
                 Explore Our Rooms <HiOutlineArrowRight />
@@ -157,12 +226,12 @@ const Home = () => {
           </div>
           <div className="ws-features-grid">
             {[
-              { icon: <HiOutlineSparkles />, title: 'Premium Amenities', desc: 'From rooftop infinity pools to Michelin-star dining, experience the pinnacle of lifestyle.' },
+              { icon: <HiOutlineOfficeBuilding />, title: 'Premium Amenities', desc: 'From rooftop infinity pools to Michelin-star dining, experience the pinnacle of lifestyle.' },
               { icon: <HiOutlineShieldCheck />, title: 'Unmatched Security', desc: 'Your privacy is our priority. Advanced encryption and 24/7 elite security ensure total peace of mind.' },
-              { icon: <HiOutlineStar />, title: 'Global Recognition', desc: 'Winner of 20+ International Hospitality Awards for service excellence and architectural design.' },
-              { icon: <HiOutlineGlobe />, title: 'Strategic Location', desc: 'Nestled in the city center with panoramic views and direct access to cultural landmarks.' },
-              { icon: <HiOutlineLightningBolt />, title: 'Smart Integration', desc: 'AI-powered room settings, automated check-ins, and personalized digital concierge at your service.' },
-              { icon: <HiOutlineHeart />, title: 'Bespoke Services', desc: 'Personalized guest preferences remembered across all our global locations for a tailored stay.' }
+              { icon: <HiOutlineBadgeCheck />, title: 'Global Recognition', desc: 'Winner of 20+ International Hospitality Awards for service excellence and architectural design.' },
+              { icon: <HiOutlineLocationMarker />, title: 'Strategic Location', desc: 'Nestled in the city center with panoramic views and direct access to cultural landmarks.' },
+              { icon: <HiOutlineKey />, title: 'Smart Integration', desc: 'AI-powered room settings, automated check-ins, and personalized digital concierge at your service.' },
+              { icon: <HiOutlineChatAlt2 />, title: 'Bespoke Services', desc: 'Personalized guest preferences remembered across all our global locations for a tailored stay.' }
             ].map((feature, i) => (
               <div key={i} className="glass-card ws-feature-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="ws-feature-icon">{feature.icon}</div>
@@ -240,7 +309,19 @@ const Home = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}>Room {room.roomNumber}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--ws-text-muted)', background: 'rgba(255,255,255,0.03)', padding: '6px 10px', borderRadius: '8px' }}>Premium View</div>
                   </div>
-                  <Link to={`/book-room?roomId=${room._id}`} className="ws-btn ws-btn-primary" style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}>Reserve Now</Link>
+                  <button 
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        navigate(`/book-room?roomId=${room._id}`);
+                      } else {
+                        navigate('/login');
+                      }
+                    }} 
+                    className="ws-btn ws-btn-primary" 
+                    style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}
+                  >
+                    Reserve Now
+                  </button>
                 </div>
               </div>
             ))}
@@ -338,6 +419,7 @@ const Home = () => {
           flex-direction: column;
           align-items: center;
           max-width: 1000px;
+          padding-top: 120px;
         }
         .ws-hero-tag-v2 {
           display: inline-flex;
@@ -374,21 +456,123 @@ const Home = () => {
           width: 100%;
           max-width: 900px;
           padding: 2rem;
-          margin: 0 auto 4rem;
+          margin: 0 auto 2.5rem;
           border-radius: 24px;
           background: rgba(255, 255, 255, 0.03);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .ws-hero-booking-search {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto 4rem;
+          padding: 0.8rem;
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(30px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .ws-search-form-v2 {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+        }
+        .ws-search-field {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 0.5rem 1.5rem;
+          text-align: left;
+        }
+        .ws-search-field label {
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: var(--ws-accent);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          white-space: nowrap;
+        }
+        .ws-search-field input, .ws-search-field select {
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 1rem;
+          font-weight: 600;
+          outline: none;
+          padding: 0;
+          width: 100%;
+          cursor: pointer;
+          font-family: inherit;
+        }
+        .ws-search-field select option {
+          background: #050810;
+          color: white;
+        }
+        .ws-search-field input::-webkit-calendar-picker-indicator {
+          filter: invert(1);
+          opacity: 0.5;
+        }
+        .ws-search-divider {
+          width: 1px;
+          height: 45px;
+          background: rgba(255, 255, 255, 0.1);
+          flex-shrink: 0;
+        }
+        .ws-search-btn-v2 {
+          background: var(--ws-accent);
+          color: #050810;
+          border: none;
+          padding: 0 2.5rem;
+          height: 65px;
+          border-radius: 18px;
+          font-weight: 700;
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          cursor: pointer;
+          white-space: nowrap;
+          margin-left: 0.5rem;
+        }
+        .ws-search-btn-v2:hover {
+          transform: scale(1.02);
+          box-shadow: 0 0 30px var(--ws-accent-glow);
+          background: #00E0FF;
+        }
+        @media (max-width: 1100px) {
+          .ws-hero-booking-search { max-width: 95%; }
+          .ws-search-field { padding: 0.5rem 1rem; }
+        }
+        @media (max-width: 992px) {
+          .ws-search-form-v2 {
+            flex-direction: column;
+            gap: 0;
+            padding: 1rem;
+          }
+          .ws-search-divider { display: none; }
+          .ws-search-field {
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 0.5rem;
+          }
+          .ws-search-btn-v2 {
+            width: 100%;
+            margin-top: 2rem;
+            margin-left: 0;
+            justify-content: center;
+          }
+        }
         .ws-stat-v-divider {
           width: 1px;
           height: 50px;
           background: rgba(255, 255, 255, 0.1);
-        }
-        .ws-hero-centered-actions {
-          display: flex;
-          gap: 24px;
-          justify-content: center;
         }
         .ws-accent-glow-text {
           color: var(--ws-accent);

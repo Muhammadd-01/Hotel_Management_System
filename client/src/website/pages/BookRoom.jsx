@@ -17,6 +17,10 @@ const BookRoom = () => {
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
+    room: preSelectedRoomId || '',
+    checkIn: searchParams.get('checkIn') || '',
+    checkOut: searchParams.get('checkOut') || '',
+    guests: searchParams.get('guests') || '1',
     selectedExtras: [] // Array of selected extra services
   });
 
@@ -79,7 +83,7 @@ const BookRoom = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      document.getElementById('auth-notice').classList.add('open');
+      navigate('/login');
       return;
     }
     if (nights <= 0) {
@@ -118,9 +122,22 @@ const BookRoom = () => {
 
   return (
     <div className="ws-book-page">
-      <section className="ws-page-banner reveal" style={{ padding: '100px 0', textAlign: 'center' }}>
-        <span className="ws-section-tag">Reservations</span>
-        <h1 style={{ fontSize: '3.5rem' }}>Reserve Your <span className="ws-accent">Sanctuary</span></h1>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1920&q=80" 
+            alt="Royal Sanctuary"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container" style={{ textAlign: 'center' }}>
+          <span className="ws-section-tag">Reservations</span>
+          <h1 style={{ fontSize: '4rem' }}>Reserve Your <span className="ws-accent">Sanctuary</span></h1>
+          <p style={{ maxWidth: '600px', margin: '1.5rem auto 0', color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
+            Experience unparalleled peace and elite hospitality. Your perfect retreat is meticulously prepared for your arrival.
+          </p>
+        </div>
       </section>
 
       <div className="ws-container ws-section">

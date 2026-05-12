@@ -46,4 +46,16 @@ const deactivateStaff = async (req, res) => {
   }
 };
 
-module.exports = { getAllStaff, updateStaff, deactivateStaff };
+// GET /api/staff/public - Sirf public info (About page ke liye)
+const getPublicStaff = async (req, res) => {
+  try {
+    const staff = await User.find({ role: { $in: ['admin', 'staff'] } })
+      .select('name role') // Email aur sensitive info nahi chahiye public ko
+      .limit(10);
+    res.json({ success: true, staff });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Public staff fetch mein error' });
+  }
+};
+
+module.exports = { getAllStaff, updateStaff, deactivateStaff, getPublicStaff };

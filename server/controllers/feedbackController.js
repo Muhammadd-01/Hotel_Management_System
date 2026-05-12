@@ -4,11 +4,11 @@ const Feedback = require('../models/Feedback');
 // GET /api/feedback - saari feedback ki list
 const getAllFeedback = async (req, res) => {
   try {
-    const feedback = await Feedback.find()
-      .populate('guest', 'firstName lastName')
-      .populate('booking', 'guestName')
+    const feedbacks = await Feedback.find()
+      .populate('guest', 'name email')
+      .populate('booking', 'guestName room')
       .sort({ createdAt: -1 });
-    res.json({ success: true, count: feedback.length, feedback });
+    res.json({ success: true, count: feedbacks.length, feedbacks });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Feedback fetch mein error' });
   }

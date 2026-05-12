@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HiOutlineLocationMarker, HiOutlinePhone, HiOutlineMail, HiOutlineClock, HiOutlineChatAlt } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 
 const Contact = () => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
@@ -12,7 +14,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      document.getElementById('auth-notice').classList.add('open');
+      navigate('/login');
       return;
     }
     setSubmitted(true);
@@ -22,10 +24,20 @@ const Contact = () => {
 
   return (
     <div className="ws-contact-page">
-      <section className="ws-page-banner reveal" style={{ padding: '150px 0', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-        <span className="ws-section-tag">Global Presence</span>
-        <h1 style={{ fontSize: '4.5rem' }}>Get In <span className="ws-accent">Touch</span></h1>
-        <p style={{ maxWidth: '800px', margin: '0 auto', color: 'var(--ws-text-muted)', fontSize: '1.2rem' }}>Whether it's a reservation inquiry or a partnership proposal, we're here to assist you 24/7.</p>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=1920&q=80" 
+            alt="Contact Us"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container">
+          <span className="ws-section-tag">24/7 Assistance</span>
+          <h1 style={{ fontSize: '4.5rem' }}>Connect with <span className="ws-accent">Us</span></h1>
+          <p style={{ maxWidth: '800px', margin: '0 auto', color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem' }}>Our dedicated concierge team is always here to ensure your journey is flawless.</p>
+        </div>
       </section>
 
       <section className="ws-section">

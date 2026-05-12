@@ -58,39 +58,58 @@ const GuestFeedback = () => {
 
   return (
     <div className="ws-feedback-page">
-      <section className="ws-page-banner reveal" style={{ padding: '150px 0', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-        <span className="ws-section-tag">Wall of Fame</span>
-        <h1 style={{ fontSize: '4.5rem' }}>Guest <span className="ws-accent">Testimonials</span></h1>
-        <p style={{ maxWidth: '800px', margin: '0 auto', color: 'var(--ws-text-muted)', fontSize: '1.2rem' }}>Real stories from our esteemed guests about their unforgettable journeys with us.</p>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80" 
+            alt="Guest Testimonials"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container">
+          <span className="ws-section-tag">Wall of Fame</span>
+          <h1 style={{ fontSize: '4.5rem' }}>Guest <span className="ws-accent">Testimonials</span></h1>
+          <p style={{ maxWidth: '800px', margin: '0 auto', color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem' }}>Real stories from our esteemed guests about their unforgettable journeys with us.</p>
+        </div>
       </section>
 
       <section className="ws-section">
         <div className="ws-container">
+          {/* Featured Quote Section */}
+          <div className="reveal" style={{ textAlign: 'center', marginBottom: '8rem' }}>
+            <div style={{ fontSize: '4rem', color: 'var(--ws-accent)', marginBottom: '2rem', opacity: 0.5 }}>"</div>
+            <h2 style={{ fontSize: '2.5rem', fontStyle: 'italic', maxWidth: '900px', margin: '0 auto', lineHeight: 1.4 }}>
+              LuxuryStay isn't just a hotel; it's a sanctuary where technology and humanity dance in perfect harmony.
+            </h2>
+            <p style={{ marginTop: '2rem', color: 'var(--ws-accent)', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>— Global Elite Member</p>
+          </div>
+
           {/* Stats Bar */}
           <div className="reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '5rem' }}>
-            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem', borderTop: '4px solid var(--ws-accent)' }}>
               <h2 style={{ fontSize: '4rem', lineHeight: 1 }}>{avgRating}</h2>
               <div style={{ margin: '1rem 0' }}>{renderStars(Math.round(parseFloat(avgRating)))}</div>
               <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Average Rating</p>
             </div>
-            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem', borderTop: '4px solid var(--ws-accent)' }}>
               <h2 style={{ fontSize: '4rem', lineHeight: 1 }}>{feedbacks.length}</h2>
               <HiOutlineChatAlt size={32} color="var(--ws-accent)" style={{ margin: '1rem 0' }} />
               <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Global Reviews</p>
             </div>
-            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="glass-card" style={{ textAlign: 'center', padding: '3rem', borderTop: '4px solid var(--ws-accent)' }}>
               <h2 style={{ fontSize: '4rem', lineHeight: 1 }}>98%</h2>
               <HiOutlineThumbUp size={32} color="var(--ws-accent)" style={{ margin: '1rem 0' }} />
               <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px' }}>Recommended</p>
             </div>
-            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '1px solid var(--ws-accent)' }}>
-              <p style={{ marginBottom: '1.5rem', textAlign: 'center', padding: '0 1rem' }}>Share your own LuxuryStay experience with the world.</p>
+            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '1px solid var(--ws-accent-soft)', background: 'linear-gradient(rgba(0,209,255,0.05), transparent)' }}>
+              <p style={{ marginBottom: '1.5rem', textAlign: 'center', padding: '0 1rem', fontSize: '0.9rem' }}>Have you experienced the future of hospitality?</p>
               {isAuthenticated ? (
-                <button className="ws-btn ws-btn-primary" onClick={() => setShowForm(!showForm)}>
+                <button className="ws-btn ws-btn-primary" onClick={() => setShowForm(!showForm)} style={{ width: '80%' }}>
                   <HiOutlinePencil /> Write Review
                 </button>
               ) : (
-                <button className="ws-btn ws-btn-primary" onClick={() => (window.location.href = '/login')}>Login to Review</button>
+                <button className="ws-btn ws-btn-primary" onClick={() => (window.location.href = '/login')} style={{ width: '80%' }}>Login to Review</button>
               )}
             </div>
           </div>
@@ -100,8 +119,8 @@ const GuestFeedback = () => {
           {/* Review Form */}
           {showForm && (
             <div className="reveal" style={{ marginBottom: '5rem' }}>
-              <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <h3 style={{ marginBottom: '2rem' }}>Post Your Review</h3>
+              <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem' }}>
+                <h3 style={{ marginBottom: '2rem', fontSize: '2rem' }}>Share Your <span className="ws-accent">Journey</span></h3>
                 <form onSubmit={handleSubmit}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '1.5rem' }}>
                     <div className="ws-form-group">
@@ -127,10 +146,10 @@ const GuestFeedback = () => {
                   </div>
                   <div className="ws-form-group" style={{ marginBottom: '2rem' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--ws-text-muted)' }}>Detailed Feedback</label>
-                    <textarea value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} rows="5" placeholder="Tell us about the highlights of your stay..." required style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--ws-glass-border)', padding: '12px', borderRadius: '10px', color: 'white', outline: 'none', resize: 'none' }}></textarea>
+                    <textarea value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} rows="5" placeholder="Tell us about the highlights of your stay..." required style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--ws-glass-border)', padding: '1.2rem', borderRadius: '16px', color: 'white', outline: 'none', resize: 'none' }}></textarea>
                   </div>
-                  <button type="submit" className="ws-btn ws-btn-primary" disabled={submitting}>
-                    {submitting ? 'Sharing...' : 'Share My Review'}
+                  <button type="submit" className="ws-btn ws-btn-primary" style={{ width: '100%', justifyContent: 'center', height: '55px' }} disabled={submitting}>
+                    {submitting ? 'Sharing...' : 'Share My Official Review'}
                   </button>
                 </form>
               </div>
@@ -139,37 +158,101 @@ const GuestFeedback = () => {
 
           {/* Reviews List */}
           {loading ? (
-            <div className="page-loading"><div className="spinner"></div></div>
+            <div className="page-loading" style={{ textAlign: 'center', padding: '5rem' }}>
+              <div className="spinner" style={{ border: '4px solid rgba(0,209,255,0.1)', borderTop: '4px solid var(--ws-accent)', borderRadius: '50%', width: '50px', height: '50px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+              <p style={{ marginTop: '1.5rem', color: 'var(--ws-text-muted)', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem' }}>Gathering Guest Experiences...</p>
+            </div>
           ) : (
-            <div className="ws-features-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}>
+            <div className="ws-feedback-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '4rem' }}>
               {feedbacks.length === 0 ? (
-                <div style={{ textAlign: 'center', gridColumn: '1/-1', padding: '100px 0' }}>
-                  <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Be the First</h3>
-                  <p style={{ color: 'var(--ws-text-muted)' }}>No reviews yet. Share your experience and help others discover LuxuryStay.</p>
+                <div style={{ textAlign: 'center', gridColumn: '1/-1', padding: '100px 0', background: 'rgba(255,255,255,0.02)', borderRadius: '32px', border: '1px dashed var(--ws-glass-border)' }}>
+                  <HiOutlineChatAlt size={60} color="var(--ws-accent-soft)" style={{ marginBottom: '1.5rem' }} />
+                  <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>The Guestbook is Empty</h3>
+                  <p style={{ color: 'var(--ws-text-muted)', maxWidth: '400px', margin: '0 auto' }}>Be the first to share your journey and inspire other elite travelers around the world.</p>
                 </div>
               ) : (
                 feedbacks.map((f, i) => (
-                  <div key={f._id || i} className="glass-card reveal" style={{ animationDelay: `${i * 0.1}s`, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'var(--ws-accent-soft)', border: '1px solid var(--ws-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--ws-accent)' }}>
+                  <div 
+                    key={f._id || i} 
+                    className="glass-card reveal-item" 
+                    style={{ 
+                      animationDelay: `${i * 0.1}s`, 
+                      padding: '3.5rem !important', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      border: '1px solid var(--ws-glass-border)', 
+                      transition: '0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-10px)'; e.currentTarget.style.borderColor = 'var(--ws-accent)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,209,255,0.1)'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--ws-glass-border)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  >
+                    {/* Decorative Category Accent */}
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--ws-accent)' }}></div>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2.5rem', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ 
+                          width: '70px', 
+                          height: '70px', 
+                          borderRadius: '22px', 
+                          background: 'linear-gradient(135deg, var(--ws-accent-soft), rgba(0,209,255,0.05))', 
+                          border: '1px solid var(--ws-accent)', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          fontWeight: '800', 
+                          color: 'var(--ws-accent)', 
+                          fontSize: '1.5rem',
+                          boxShadow: '0 10px 20px rgba(0,209,255,0.15)'
+                        }}>
                           {f.guest?.name?.charAt(0) || f.guestName?.charAt(0) || 'G'}
                         </div>
                         <div>
-                          <strong style={{ display: 'block', fontSize: '1.1rem' }}>{f.guest?.name || f.guestName || 'Elite Guest'}</strong>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--ws-text-muted)' }}>{new Date(f.createdAt).toLocaleDateString()}</span>
+                          <strong style={{ display: 'block', fontSize: '1.3rem', color: 'white', marginBottom: '4px' }}>{f.guest?.name || f.guestName || 'Elite Guest'}</strong>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '0.7rem', background: 'var(--ws-accent)', color: 'var(--ws-primary)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>Verified</span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--ws-text-muted)' }}>{new Date(f.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          </div>
                         </div>
                       </div>
-                      <div>{renderStars(f.rating)}</div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ marginBottom: '8px', display: 'flex', gap: '3px' }}>{renderStars(f.rating)}</div>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--ws-accent)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '2px', background: 'var(--ws-accent-soft)', padding: '4px 10px', borderRadius: '100px' }}>{f.category}</span>
+                      </div>
                     </div>
-                    <span style={{ display: 'inline-block', padding: '4px 12px', background: 'var(--ws-accent-soft)', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--ws-accent)', textTransform: 'uppercase', width: 'fit-content', marginBottom: '1rem' }}>
-                      {f.category}
-                    </span>
-                    <p style={{ color: 'var(--ws-text-muted)', fontSize: '1rem', fontStyle: 'italic', flex: 1 }}>"{f.comment}"</p>
+                    
+                    <div style={{ position: 'relative', flex: 1 }}>
+                      <p style={{ 
+                        color: 'rgba(255,255,255,0.9)', 
+                        fontSize: '1.2rem', 
+                        lineHeight: 1.8, 
+                        fontStyle: 'italic', 
+                        position: 'relative', 
+                        zIndex: 1, 
+                        padding: '0 5px',
+                        fontWeight: '300',
+                        letterSpacing: '0.3px'
+                      }}>
+                        "{f.comment}"
+                      </p>
+                    </div>
+
                     {f.response && (
-                      <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', borderLeft: '4px solid var(--ws-accent)' }}>
-                        <strong style={{ display: 'block', fontSize: '0.9rem', marginBottom: '8px' }}>🏨 Management Response</strong>
-                        <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>{f.response}</p>
+                      <div style={{ 
+                        marginTop: '3rem', 
+                        padding: '2.5rem', 
+                        background: 'rgba(255,255,255,0.02)', 
+                        borderRadius: '24px', 
+                        border: '1px solid var(--ws-glass-border)',
+                        position: 'relative' 
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                          <div style={{ width: '12px', height: '2px', background: 'var(--ws-accent)' }}></div>
+                          <strong style={{ fontSize: '0.75rem', color: 'var(--ws-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>Curator's Note</strong>
+                        </div>
+                        <p style={{ fontSize: '1rem', color: 'var(--ws-text-muted)', lineHeight: 1.7, fontStyle: 'normal' }}>{f.response}</p>
                       </div>
                     )}
                   </div>
@@ -179,6 +262,11 @@ const GuestFeedback = () => {
           )}
         </div>
       </section>
+      <style>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .reveal-item { animation: revealUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+        @keyframes revealUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 };

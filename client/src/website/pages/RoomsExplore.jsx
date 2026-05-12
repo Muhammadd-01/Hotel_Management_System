@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import API from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { HiOutlineUserGroup, HiOutlineArrowRight, HiOutlineSearch, HiOutlineFilter, HiOutlineWifi, HiOutlineDesktopComputer, HiOutlineCube, HiOutlineShieldCheck } from 'react-icons/hi';
 
 const ROOM_IMAGES = {
@@ -19,10 +20,18 @@ const AMENITIES_ICONS = {
 };
 
 const RoomsExplore = () => {
+  const [searchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(searchParams.get('roomType') || 'all');
   const [search, setSearch] = useState('');
+
+  // Extract search params from Home page
+  const checkIn = searchParams.get('checkIn') || '';
+  const checkOut = searchParams.get('checkOut') || '';
+  const guests = searchParams.get('guests') || '1';
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -55,10 +64,20 @@ const RoomsExplore = () => {
 
   return (
     <div className="ws-rooms-page">
-      <section className="ws-page-banner reveal" style={{ padding: '120px 0', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-        <span className="ws-section-tag">Luxurious Stays</span>
-        <h1 style={{ fontSize: '4rem' }}>Our <span className="ws-accent">Collections</span></h1>
-        <p style={{ maxWidth: '700px', margin: '0 auto', color: 'var(--ws-text-muted)' }}>From executive rooms to royal penthouses, discover a space that resonates with your taste and style.</p>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1590490359683-658d3d23f972?w=1920&q=80" 
+            alt="Luxury Rooms Sanctuary"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container">
+          <span className="ws-section-tag">Luxurious Stays</span>
+          <h1 style={{ fontSize: '4rem' }}>Our <span className="ws-accent">Collections</span></h1>
+          <p style={{ maxWidth: '700px', margin: '0 auto', color: 'var(--ws-text-muted)' }}>From executive rooms to royal penthouses, discover a space that resonates with your taste and style.</p>
+        </div>
       </section>
 
       <div className="ws-container ws-section">
@@ -66,12 +85,6 @@ const RoomsExplore = () => {
           <div className="ws-search-box" style={{ background: 'var(--ws-glass)', border: '1px solid var(--ws-glass-border)', padding: '12px 20px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
             <HiOutlineSearch size={20} color="var(--ws-accent)" />
             <input type="text" placeholder="Search room types or numbers..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }} />
-          </div>
-          <div className="ws-filter-chips" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '1.5rem' }}>
-            <button className={`ws-btn ${filter === 'all' ? 'ws-btn-primary' : 'ws-btn-outline-white'}`} onClick={() => setFilter('all')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>All Collection</button>
-            {roomTypes.map(type => (
-              <button key={type} className={`ws-btn ${filter === type ? 'ws-btn-primary' : 'ws-btn-outline-white'}`} onClick={() => setFilter(type)} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>{type}</button>
-            ))}
           </div>
         </div>
 
@@ -97,7 +110,19 @@ const RoomsExplore = () => {
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
                   <Link to={`/room-details/${room._id}`} className="ws-btn ws-btn-outline-white" style={{ flex: 1, justifyContent: 'center' }}>View Details</Link>
-                  <Link to={`/book-room?roomId=${room._id}`} className="ws-btn ws-btn-primary" style={{ flex: 1, justifyContent: 'center' }}>Book Now</Link>
+                  <button 
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        navigate(`/book-room?roomId=${room._id}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+                      } else {
+                        navigate('/login');
+                      }
+                    }} 
+                    className="ws-btn ws-btn-primary" 
+                    style={{ flex: 1, justifyContent: 'center' }}
+                  >
+                    Book Now
+                  </button>
                 </div>
               </div>
             </div>

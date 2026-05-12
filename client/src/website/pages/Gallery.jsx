@@ -23,10 +23,20 @@ const Gallery = () => {
 
   return (
     <div className="ws-gallery">
-      <section className="ws-page-banner reveal" style={{ padding: '150px 0', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-        <span className="ws-section-tag">Visual Journey</span>
-        <h1 style={{ fontSize: '4.5rem' }}>The <span className="ws-accent">Gallery</span></h1>
-        <p style={{ maxWidth: '700px', margin: '0 auto', color: 'var(--ws-text-muted)' }}>Witness the elegance of LuxuryStay through our lens. Every corner tells a story of perfection.</p>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1549294413-26f195200c16?w=1920&q=80" 
+            alt="Luxury Gallery"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container">
+          <span className="ws-section-tag">Visual Journey</span>
+          <h1 style={{ fontSize: '4.5rem' }}>The <span className="ws-accent">Gallery</span></h1>
+          <p style={{ maxWidth: '800px', margin: '0 auto', color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem' }}>Immerse yourself in the aesthetic splendor of LuxuryStay through our curated lens.</p>
+        </div>
       </section>
 
       <section className="ws-section">

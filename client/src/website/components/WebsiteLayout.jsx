@@ -1,8 +1,10 @@
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { HiOutlineUserCircle, HiOutlineMenu, HiOutlineX, HiOutlineSun, HiOutlineMoon } from 'react-icons/hi';
+import { 
+  HiOutlineUserCircle, HiOutlineMenu, HiOutlineX, 
+  HiOutlineOfficeBuilding, HiOutlineChatAlt2 
+} from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
 import LuxuryConfirmModal from './LuxuryConfirmModal';
 
@@ -10,7 +12,6 @@ const WebsiteLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -55,18 +56,18 @@ const WebsiteLayout = ({ children }) => {
       <nav className={`ws-nav ${isScrolled ? 'ws-nav-scrolled' : ''}`}>
         <div className="ws-nav-inner">
           <Link to="/" className="ws-logo">
-            <span className="ws-logo-icon">🏨</span>
+            <span className="ws-logo-icon"><HiOutlineOfficeBuilding /></span>
             <span className="ws-logo-text">LuxuryStay</span>
           </Link>
 
           <div className={`ws-nav-links ${isMenuOpen ? 'ws-nav-open' : ''}`}>
             {[
               { path: '/', label: 'Home' },
+              { path: '/about', label: 'About' },
               { path: '/rooms-explore', label: 'Rooms' },
               { path: '/amenities', label: 'Amenities' },
               { path: '/gallery', label: 'Gallery' },
               { path: '/guest-feedback', label: 'Reviews' },
-              { path: '/about', label: 'About' },
               { path: '/contact', label: 'Contact' }
             ].map(link => (
               <NavLink 
@@ -91,9 +92,6 @@ const WebsiteLayout = ({ children }) => {
           </div>
 
           <div className="ws-nav-actions">
-            <button onClick={toggleTheme} className="ws-theme-toggle" style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-              {theme === 'light' ? <HiOutlineMoon size={22} /> : <HiOutlineSun size={22} />}
-            </button>
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
                 {user.role === 'admin' && (
@@ -134,7 +132,7 @@ const WebsiteLayout = ({ children }) => {
         <div className="ws-ai-concierge">
           <button className="ws-ai-btn" onClick={() => document.getElementById('ai-chat').classList.toggle('open')}>
             <span className="ws-ai-pulse"></span>
-            🤖
+            <HiOutlineChatAlt2 size={24} />
           </button>
           <div id="ai-chat" className="ws-ai-window glass-card">
             <div className="ws-ai-header">
@@ -177,7 +175,7 @@ const WebsiteLayout = ({ children }) => {
           <div className="ws-footer-top">
             <div className="ws-footer-brand">
               <div className="ws-logo" style={{marginBottom: '20px'}}>
-                <span className="ws-logo-icon">🏨</span>
+                <span className="ws-logo-icon"><HiOutlineOfficeBuilding /></span>
                 <span className="ws-logo-text">LuxuryStay</span>
               </div>
               <p>Experience the future of luxury hospitality. Our AI-driven comfort ensures every moment is tailored to your desires.</p>

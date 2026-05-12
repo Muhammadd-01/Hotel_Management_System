@@ -1,28 +1,52 @@
 import { 
   HiOutlineSparkles, HiOutlineHeart, HiOutlineLightningBolt, 
   HiOutlineShieldCheck, HiOutlineGlobe, HiOutlineClock,
-  HiOutlineUserGroup, HiOutlineCamera, HiOutlineMusicNote
+  HiOutlineUserGroup, HiOutlineCamera, HiOutlineMusicNote,
+  HiOutlineSun, HiOutlineStar, HiOutlineOfficeBuilding, HiOutlineKey
 } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Amenities = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
   const amenities = [
-    { icon: '🏊‍♂️', title: 'Infinity Sky Pool', desc: 'A breathtaking rooftop pool with temperature control and panoramic views of the entire city skyline. Open 24/7 for our guests.' },
-    { icon: '🧖‍♀️', title: 'Ethereal Wellness Spa', desc: 'Immerse yourself in tranquility. Our spa offers personalized holistic treatments, crystal healing, and traditional therapy.' },
-    { icon: '🍽️', title: 'Michelin Star Dining', desc: 'Three distinct world-class restaurants led by award-winning chefs, offering a journey through global flavors.' },
-    { icon: '💪', title: 'Elite Fitness Center', desc: 'Equipped with the latest AI-driven fitness gear, personal biometric tracking, and world-class personal trainers.' },
-    { icon: '🏢', title: 'Smart Business Hub', desc: 'Future-proof meeting rooms with holographic projection technology and ultra-high-speed neural connectivity.' },
-    { icon: '🚗', title: 'Autonomous Valet', desc: 'Seamless, secure, and instant valet services. Your vehicle is always ready when you are.' },
-    { icon: '👶', title: 'Royal Kids Club', desc: 'A curated safe space for young explorers with educational AI games, creative workshops, and supervised play.' },
-    { icon: '🧹', title: 'Smart Housekeeping', desc: 'Precision cleaning using eco-friendly nanotechnology. Your sanctuary is maintained at perfection 24/7.' }
+    { icon: <HiOutlineSun />, title: 'Infinity Sky Pool', desc: 'A breathtaking rooftop pool with temperature control and panoramic views of the entire city skyline. Open 24/7 for our guests.' },
+    { icon: <HiOutlineHeart />, title: 'Ethereal Wellness Spa', desc: 'Immerse yourself in tranquility. Our spa offers personalized holistic treatments, crystal healing, and traditional therapy.' },
+    { icon: <HiOutlineStar />, title: 'Michelin Star Dining', desc: 'Three distinct world-class restaurants led by award-winning chefs, offering a journey through global flavors.' },
+    { icon: <HiOutlineLightningBolt />, title: 'Elite Fitness Center', desc: 'Equipped with the latest AI-driven fitness gear, personal biometric tracking, and world-class personal trainers.' },
+    { icon: <HiOutlineOfficeBuilding />, title: 'Smart Business Hub', desc: 'Future-proof meeting rooms with holographic projection technology and ultra-high-speed neural connectivity.' },
+    { icon: <HiOutlineKey />, title: 'Autonomous Valet', desc: 'Seamless, secure, and instant valet services. Your vehicle is always ready when you are.' },
+    { icon: <HiOutlineUserGroup />, title: 'Royal Kids Club', desc: 'A curated safe space for young explorers with educational AI games, creative workshops, and supervised play.' },
+    { icon: <HiOutlineShieldCheck />, title: 'Smart Housekeeping', desc: 'Precision cleaning using eco-friendly nanotechnology. Your sanctuary is maintained at perfection 24/7.' }
   ];
+
+  const handleFunctionalClick = (e, target = '/contact') => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate('/login');
+    } else {
+      navigate(target);
+    }
+  };
 
   return (
     <div className="ws-amenities">
-      <section className="ws-page-banner reveal" style={{ padding: '150px 0', textAlign: 'center', background: 'linear-gradient(rgba(11,15,26,0.85), rgba(11,15,26,0.85)), url("https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=1200&q=80") center/cover fixed' }}>
-        <span className="ws-section-tag">World Class Facilities</span>
-        <h1 style={{ fontSize: '4.5rem' }}>Ethereal <span className="ws-accent">Amenities</span></h1>
-        <p style={{ maxWidth: '800px', margin: '0 auto', color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem' }}>Beyond luxury. Experience the pinnacle of modern comfort and innovation.</p>
+      <section className="ws-page-banner reveal">
+        <div className="ws-hero-image-container">
+          <img 
+            src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1920&q=80" 
+            alt="Luxury Amenities"
+            className="ws-hero-image-element"
+          />
+          <div className="ws-hero-gradient-overlay"></div>
+        </div>
+        <div className="ws-container">
+          <span className="ws-section-tag">World Class Facilities</span>
+          <h1 style={{ fontSize: '4.5rem' }}>Ethereal <span className="ws-accent">Amenities</span></h1>
+          <p style={{ maxWidth: '800px', margin: '0 auto', color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem' }}>Beyond luxury. Experience the pinnacle of modern comfort and innovation.</p>
+        </div>
       </section>
 
       <section className="ws-section">
@@ -30,10 +54,10 @@ const Amenities = () => {
           <div className="ws-features-grid">
             {amenities.map((a, i) => (
               <div key={i} className="glass-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 10px var(--ws-accent))' }}>{a.icon}</div>
+                <div style={{ fontSize: '3rem', marginBottom: '1.5rem', color: 'var(--ws-accent)', filter: 'drop-shadow(0 0 10px var(--ws-accent-soft))' }}>{a.icon}</div>
                 <h3 style={{ fontSize: '1.6rem', marginBottom: '1rem', color: 'white' }}>{a.title}</h3>
                 <p style={{ color: 'var(--ws-text-muted)', fontSize: '1rem' }}>{a.desc}</p>
-                <Link to="/contact" style={{ display: 'inline-block', marginTop: '1.5rem', color: 'var(--ws-accent)', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}>Enquire Service →</Link>
+                <button onClick={(e) => handleFunctionalClick(e)} style={{ background: 'none', border: 'none', padding: 0, display: 'inline-block', marginTop: '1.5rem', color: 'var(--ws-accent)', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer' }}>Enquire Service →</button>
               </div>
             ))}
           </div>
@@ -55,7 +79,7 @@ const Amenities = () => {
                 <div style={{ color: 'var(--ws-accent)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '8px' }}>WEEKLY EVENT</div>
                 <h3>Midnight Jazz Soirée</h3>
                 <p style={{ color: 'var(--ws-text-muted)', margin: '12px 0 20px' }}>Experience soulful jazz performances every Saturday night at the Rooftop Crystal Bar.</p>
-                <Link to="/contact" className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Reserve a Table</Link>
+                <button onClick={(e) => handleFunctionalClick(e)} className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Reserve a Table</button>
               </div>
             </div>
             <div className="glass-card reveal" style={{ padding: 0, overflow: 'hidden', animationDelay: '0.1s' }}>
@@ -64,7 +88,7 @@ const Amenities = () => {
                 <div style={{ color: 'var(--ws-accent)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '8px' }}>PRIVATE DINING</div>
                 <h3>Epicurean Journey</h3>
                 <p style={{ color: 'var(--ws-text-muted)', margin: '12px 0 20px' }}>A private 12-course tasting menu curated specifically for your palate by our Executive Chef.</p>
-                <Link to="/contact" className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Book Experience</Link>
+                <button onClick={(e) => handleFunctionalClick(e)} className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Book Experience</button>
               </div>
             </div>
             <div className="glass-card reveal" style={{ padding: 0, overflow: 'hidden', animationDelay: '0.2s' }}>
@@ -73,7 +97,7 @@ const Amenities = () => {
                 <div style={{ color: 'var(--ws-accent)', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '8px' }}>WELLNESS</div>
                 <h3>The Zenith Ritual</h3>
                 <p style={{ color: 'var(--ws-text-muted)', margin: '12px 0 20px' }}>A full-day immersive wellness ritual including meditation, hydrotherapy, and a private spa suite.</p>
-                <Link to="/contact" className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Enquire Now</Link>
+                <button onClick={(e) => handleFunctionalClick(e)} className="ws-btn ws-btn-outline-white" style={{ width: '100%', justifyContent: 'center' }}>Enquire Now</button>
               </div>
             </div>
           </div>
