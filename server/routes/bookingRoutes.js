@@ -1,10 +1,7 @@
 // bookingRoutes.js - This file defines booking routes
 const express = require('express');
 const router = express.Router();
-const { 
-  getAllBookings, getBookingById, getMyBookings, createBooking, 
-  checkoutBooking, cancelBooking 
-} = require('../controllers/bookingController');
+const { getAllBookings, getBookingById, getMyBookings, createBooking, checkoutBooking, cancelBooking } = require('../controllers/bookingController');
 const { protect } = require('../middleware/auth');
 const { bookingRules } = require('../middleware/validate');
 

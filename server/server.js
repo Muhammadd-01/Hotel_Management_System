@@ -27,10 +27,16 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Rate Limiting - brute force prevention
+// CORS configuration (Moved up to ensure headers are present even on errors)
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
+
+// Rate Limiting - brute force prevention (Increased for development)
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, 
+  max: 1000, // Increased from 100 to 1000 for smoother development
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 app.use('/api/', limiter);
@@ -41,12 +47,6 @@ app.use(mongoSanitize());
 // JSON data parsing middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// CORS configuration to allow multiple origins
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true
-}));
 
 // ============ API ROUTES SETUP ============
 // Har module ke liye alag routes file hai taake code saaf rahe
@@ -62,7 +62,6 @@ app.use('/api/rooms', require('./routes/roomRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // AI Assistant functionality
-app.use('/api/rooms', require('./routes/roomRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/guests', require('./routes/guestRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));

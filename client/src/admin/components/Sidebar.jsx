@@ -127,8 +127,8 @@ const Sidebar = () => {
           {unread > 0 && <span className="notif-badge">{unread}</span>}
         </NavLink>
 
-        {/* Admin Only Management Links */}
-        {user?.role === 'admin' && (
+        {/* Admin & Manager Management Links */}
+        {(user?.role === 'admin' || user?.role === 'manager') && (
           <>
             <div className="nav-divider"></div>
             <NavLink to="/staff" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>

@@ -59,8 +59,12 @@ const CreateUser = () => {
             <div className="form-group">
               <label>System Role</label>
               <select value={form.role} onChange={(e) => setForm({...form, role: e.target.value})}>
-                <option value="staff">Staff Member (Common Access)</option>
-                <option value="admin">Admin Manager (Full Access)</option>
+                <option value="admin">Administrator (Full System Access)</option>
+                <option value="manager">Hotel Manager (Executive Control)</option>
+                <option value="receptionist">Receptionist (Bookings & Guests)</option>
+                <option value="housekeeping">Housekeeping (Cleaning & Room Status)</option>
+                <option value="maintenance">Maintenance (Technical Repairs)</option>
+                <option value="staff">General Staff (Common Access)</option>
               </select>
             </div>
             <div style={{marginTop: '24px'}}>

@@ -23,8 +23,8 @@ const Feedback = () => {
   const fetchData = async () => {
     try {
       const [fbRes, bkRes] = await Promise.all([API.get('/feedback'), API.get('/bookings')]);
-      if (fbRes.data.success) setFeedbackList(fbRes.data.feedback);
-      if (bkRes.data.success) setBookings(bkRes.data.bookings);
+      if (fbRes.data.success) setFeedbackList(fbRes.data.feedbacks || []);
+      if (bkRes.data.success) setBookings(bkRes.data.bookings || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };

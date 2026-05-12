@@ -126,7 +126,12 @@ const StaffManagement = () => {
               )}
               <div className="form-group"><label>Role</label>
                 <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}>
-                  <option value="staff">Staff</option><option value="admin">Admin Manager</option>
+                  <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="receptionist">Receptionist</option>
+                  <option value="housekeeping">Housekeeping</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="staff">Staff</option>
                 </select>
               </div>
               <div className="modal-actions">

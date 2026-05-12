@@ -47,8 +47,15 @@ const Dashboard = () => {
       {/* Page header */}
       <div className="page-header">
         <div>
-          <h1>{isGuest ? 'Guest Portal' : 'Management Dashboard'}</h1>
-          <p className="page-subtitle">Welcome back, {user?.name}! 👋 {isGuest ? 'Aapka stay kaisa chal raha hai?' : 'Hotel ki live summary yahan hai.'}</p>
+          <h1>{isGuest ? 'Guest Portal' : `${user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)} Dashboard`}</h1>
+          <p className="page-subtitle">
+            Welcome back, {user?.name}! 👋 
+            {isGuest ? ' How is your royal stay progressing?' : 
+             user?.role === 'manager' ? ' Oversee the hotel operations and executive analytics.' :
+             user?.role === 'receptionist' ? ' Manage the check-ins and guest reservations.' :
+             user?.role === 'housekeeping' ? ' Monitor room cleanliness and housekeeping tasks.' :
+             ' Here is your operational summary for today.'}
+          </p>
         </div>
       </div>
 
