@@ -1,7 +1,6 @@
 // housekeepingController.js - yeh controller housekeeping tasks handle karta hai
 const Housekeeping = require('../models/Housekeeping');
 const Room = require('../models/Room');
-const Notification = require('../models/Notification');
 
 // GET /api/housekeeping - saare tasks ki list
 const getAllTasks = async (req, res) => {
@@ -19,15 +18,8 @@ const getAllTasks = async (req, res) => {
 // POST /api/housekeeping - naya task banao
 const createTask = async (req, res) => {
   try {
-    const task = await Housekeeping.create(req.body);
-    // notification banao
-    await Notification.create({
-      title: 'New Housekeeping Task',
-      message: `${req.body.taskType} task assign hua hai Room ke liye`,
-      type: 'housekeeping',
-      forUser: req.body.assignedTo || null
-    });
-
+    const task = Housekeeping.create(req.body);
+    
     // Emit real-time notification
     const io = req.app.get('io');
     if (req.body.assignedTo) {
@@ -36,7 +28,7 @@ const createTask = async (req, res) => {
       io.emit('notification', { title: 'New Task', message: 'A new housekeeping task is available.' });
     }
 
-    const populated = await Housekeeping.findById(task._id)
+    const populated = await Housekeeping.findById((await task)._id)
       .populate('room', 'roomNumber type status')
       .populate('assignedTo', 'name');
     res.status(201).json({ success: true, message: 'Task ban gaya!', task: populated });

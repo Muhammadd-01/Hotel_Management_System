@@ -1,6 +1,5 @@
 // serviceController.js - yeh controller additional services handle karta hai
 const Service = require('../models/Service');
-const Notification = require('../models/Notification');
 
 // GET /api/services - saari services ki list
 const getAllServices = async (req, res) => {
@@ -20,13 +19,6 @@ const getAllServices = async (req, res) => {
 const createService = async (req, res) => {
   try {
     const service = await Service.create({ ...req.body, handledBy: req.user._id });
-
-    // notification banao nayi service ke liye
-    await Notification.create({
-      title: 'New Service Request',
-      message: `${req.body.serviceType} request aayi hai - Amount: Rs. ${req.body.amount}`,
-      type: 'service'
-    });
 
     const populated = await Service.findById(service._id)
       .populate('booking', 'guestName')

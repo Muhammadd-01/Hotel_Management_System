@@ -31,12 +31,6 @@ const StaffManagement = () => {
   useEffect(() => { fetchStaff(); }, []);
 
   // ============ MODAL CONTROLS ============
-  const openAdd = () => {
-    setEditing(null);
-    setForm({ name: '', email: '', password: '', role: 'receptionist' });
-    setShowModal(true);
-  };
-
   const openEdit = (staff) => {
     setEditing(staff);
     setForm({ name: staff.name, email: staff.email, password: '', role: staff.role });
@@ -48,7 +42,7 @@ const StaffManagement = () => {
     setShowDetailsModal(true);
   };
 
-  // ============ FORM SUBMISSION (ADD/UPDATE) ============
+  // ============ FORM SUBMISSION (UPDATE ONLY) ============
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -56,13 +50,9 @@ const StaffManagement = () => {
         // Update existing record
         await API.put(`/staff/${editing._id}`, { name: form.name, email: form.email, role: form.role });
         addToast('Success', 'Personnel details updated successfully!', 'success');
-      } else {
-        // Register new personnel
-        await API.post('/auth/register', form);
-        addToast('Success', 'New personnel member enrolled successfully!', 'success');
+        setShowModal(false);
+        fetchStaff();
       }
-      setShowModal(false);
-      fetchStaff();
     } catch (err) { 
       addToast('Error', err.response?.data?.message || 'Could not save record.', 'error');
     }
@@ -91,7 +81,6 @@ const StaffManagement = () => {
     <div className="staff-page">
       <div className="page-header">
         <div><h1>👥 Personnel Management</h1><p className="page-subtitle">Manage employee accounts and system access roles (Admin Only)</p></div>
-        <button className="btn btn-primary" onClick={openAdd}><HiPlus /> Add Personnel</button>
       </div>
 
       <div className="card">
@@ -121,8 +110,7 @@ const StaffManagement = () => {
                       s.role === 'superadmin' ? 'badge-warning' : 
                       s.role === 'manager' ? 'badge-success' : 
                       s.role === 'receptionist' ? 'badge-info' : 
-                      s.role === 'housekeeping' ? 'badge-success-light' : 
-                      s.role === 'maintenance' ? 'badge-warning-light' : 'badge-default'
+                      s.role === 'housekeeping' ? 'badge-success-light' : 'badge-default'
                     }`}>
                       {s.role}
                     </span>
@@ -142,28 +130,24 @@ const StaffManagement = () => {
         </div>
       </div>
 
-      {/* Enrollment Modal */}
+      {/* Edit Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header"><h2>{editing ? 'Edit Personnel Member' : 'Enroll New Personnel'}</h2><button className="btn-close" onClick={() => setShowModal(false)}><HiX /></button></div>
+            <div className="modal-header"><h2>Edit Personnel Member</h2><button className="btn-close" onClick={() => setShowModal(false)}><HiX /></button></div>
             <form onSubmit={handleSubmit} className="modal-form">
               <div className="form-group"><label>Full Name</label><input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required /></div>
               <div className="form-group"><label>Email Address</label><input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required /></div>
-              {!editing && (
-                <div className="form-group"><label>Initial Password</label><input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required /></div>
-              )}
               <div className="form-group"><label>System Role</label>
                 <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}>
                   <option value="manager">Manager</option>
                   <option value="receptionist">Receptionist</option>
                   <option value="housekeeping">Housekeeping</option>
-                  <option value="maintenance">Maintenance</option>
                 </select>
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">{editing ? 'Update Account' : 'Confirm Enrollment'}</button>
+                <button type="submit" className="btn btn-primary">Update Account</button>
               </div>
             </form>
           </div>
@@ -209,45 +193,11 @@ const StaffManagement = () => {
                   </label>
                   <p>{selectedStaff.phone || 'Not provided'}</p>
                 </div>
-                <div className="detail-item">
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '5px' }}>
-                    <HiOutlineIdentification /> CNIC Number
-                  </label>
-                  <p>{selectedStaff.cnicNumber || 'Not provided'}</p>
-                </div>
                 <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '5px' }}>
                     <HiOutlineLocationMarker /> Residential Address
                   </label>
                   <p>{selectedStaff.address || 'Not provided'}</p>
-                </div>
-              </div>
-
-              <div className="cnic-images-section">
-                <h4 style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <HiOutlineIdentification /> Identity Documents (CNIC)
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  <div className="cnic-img-box">
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>FRONT SIDE</p>
-                    <div style={{ height: '200px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {selectedStaff.cnicFrontImage ? (
-                        <img src={selectedStaff.cnicFrontImage} alt="CNIC Front" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No image uploaded</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="cnic-img-box">
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>BACK SIDE</p>
-                    <div style={{ height: '200px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {selectedStaff.cnicBackImage ? (
-                        <img src={selectedStaff.cnicBackImage} alt="CNIC Back" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No image uploaded</p>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

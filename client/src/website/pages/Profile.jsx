@@ -6,7 +6,7 @@ import {
   HiOutlineLocationMarker, HiOutlineCalendar, HiOutlineCreditCard,
   HiOutlineSparkles, HiOutlineShieldCheck, HiOutlineLogout,
   HiOutlineX, HiOutlineArrowRight, HiOutlineInformationCircle,
-  HiOutlinePencil, HiOutlineIdentification, HiOutlinePhotograph, HiOutlineUpload
+  HiOutlinePencil, HiOutlinePhotograph, HiOutlineUpload
 } from 'react-icons/hi';
 import { jsPDF } from 'jspdf';
 import API from '../../services/api';
@@ -27,10 +27,7 @@ const Profile = () => {
     name: '',
     phone: '',
     address: '',
-    cnicNumber: '',
-    profileImage: '',
-    cnicFrontImage: '',
-    cnicBackImage: ''
+    profileImage: ''
   });
   const [updating, setUpdating] = useState(false);
 
@@ -51,10 +48,7 @@ const Profile = () => {
         name: user.name || '',
         phone: user.phone || '',
         address: user.address || '',
-        cnicNumber: user.cnicNumber || '',
-        profileImage: user.profileImage || '',
-        cnicFrontImage: user.cnicFrontImage || '',
-        cnicBackImage: user.cnicBackImage || ''
+        profileImage: user.profileImage || ''
       });
     }
   }, [user]);
@@ -216,11 +210,6 @@ const Profile = () => {
                   <div className="ws-p-item">
                     <HiOutlineLocationMarker /> <span>{user.address || 'Address not set'}</span>
                   </div>
-                  {user.cnicNumber && (
-                    <div className="ws-p-item">
-                      <HiOutlineIdentification /> <span>CNIC: {user.cnicNumber}</span>
-                    </div>
-                  )}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '2rem' }}>
@@ -274,7 +263,6 @@ const Profile = () => {
                         <div className="ws-booking-card-overlay">
                           <span className={`ws-status-badge-v2 ${booking.status?.toLowerCase()}`}>
                             {booking.status === 'Confirmed' && <HiOutlineShieldCheck />}
-                            {booking.status === 'Pending' && <HiOutlineClock />}
                             {booking.status}
                           </span>
                         </div>
@@ -349,7 +337,7 @@ const Profile = () => {
             <div className="ws-modal-header">
               <span className="ws-section-tag">Account Settings</span>
               <h2>Edit Your <span className="ws-accent">Profile</span></h2>
-              <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem' }}>Update your personal details and identity verification documents.</p>
+              <p style={{ color: 'var(--ws-text-muted)', fontSize: '0.9rem' }}>Update your personal details and contact information.</p>
             </div>
 
             <form onSubmit={handleUpdateProfile} className="ws-edit-form">
@@ -382,53 +370,12 @@ const Profile = () => {
                   />
                 </div>
                 <div className="ws-form-group">
-                  <label>CNIC Number</label>
-                  <input 
-                    type="text" 
-                    value={editForm.cnicNumber} 
-                    onChange={e => setEditForm({ ...editForm, cnicNumber: e.target.value })}
-                    placeholder="42101-1234567-1"
-                  />
-                </div>
-                <div className="ws-form-group">
                   <label>Profile Picture</label>
                   <div className="ws-file-input-wrapper">
                     <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'profileImage')} id="profile-upload" />
                     <label htmlFor="profile-upload" className="ws-file-label">
                       <HiOutlineUpload /> {editForm.profileImage ? 'Change Image' : 'Upload Image'}
                     </label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="ws-cnic-upload-section" style={{ marginBottom: '2.5rem' }}>
-                <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <HiOutlineIdentification /> Identity Verification (CNIC Images)
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                  <div className="ws-cnic-upload-box">
-                    <p>Front Side</p>
-                    <div className="ws-image-preview">
-                      {editForm.cnicFrontImage ? (
-                        <img src={editForm.cnicFrontImage} alt="CNIC Front" />
-                      ) : (
-                        <HiOutlinePhotograph size={40} />
-                      )}
-                      <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'cnicFrontImage')} id="cnic-front" />
-                      <label htmlFor="cnic-front">Upload Front</label>
-                    </div>
-                  </div>
-                  <div className="ws-cnic-upload-box">
-                    <p>Back Side</p>
-                    <div className="ws-image-preview">
-                      {editForm.cnicBackImage ? (
-                        <img src={editForm.cnicBackImage} alt="CNIC Back" />
-                      ) : (
-                        <HiOutlinePhotograph size={40} />
-                      )}
-                      <input type="file" accept="image/*" onChange={e => handleFileChange(e, 'cnicBackImage')} id="cnic-back" />
-                      <label htmlFor="cnic-back">Upload Back</label>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -745,34 +692,6 @@ const Profile = () => {
           transition: 0.3s;
         }
         .ws-file-label:hover { background: rgba(255,255,255,0.1); border-color: var(--ws-accent); }
-
-        .ws-cnic-upload-box p { font-size: 0.75rem; color: var(--ws-text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .ws-image-preview {
-          height: 150px;
-          background: rgba(255,255,255,0.03);
-          border: 2px dashed var(--ws-glass-border);
-          border-radius: 16px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
-          transition: 0.3s;
-        }
-        .ws-image-preview:hover { border-color: var(--ws-accent); }
-        .ws-image-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .ws-image-preview input { opacity: 0; position: absolute; inset: 0; cursor: pointer; z-index: 2; }
-        .ws-image-preview label {
-          position: absolute;
-          bottom: 10px;
-          background: rgba(0,0,0,0.6);
-          padding: 4px 12px;
-          border-radius: 100px;
-          font-size: 0.7rem;
-          color: white;
-          z-index: 1;
-        }
 
         @media (max-width: 992px) {
           .ws-profile-grid { grid-template-columns: 1fr; }

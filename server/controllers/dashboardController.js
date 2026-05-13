@@ -2,7 +2,6 @@
 const Room = require('../models/Room');
 const Booking = require('../models/Booking');
 const Guest = require('../models/Guest');
-const Maintenance = require('../models/Maintenance');
 const Housekeeping = require('../models/Housekeeping');
 const Service = require('../models/Service');
 const Feedback = require('../models/Feedback');
@@ -20,7 +19,6 @@ const getStats = async (req, res) => {
 
     // new counts - expanded modules
     const totalGuests = await Guest.countDocuments();
-    const pendingMaintenance = await Maintenance.countDocuments({ status: { $in: ['Reported', 'In Progress'] } });
     const pendingHousekeeping = await Housekeeping.countDocuments({ status: { $in: ['Pending', 'In Progress'] } });
     const pendingServices = await Service.countDocuments({ status: { $in: ['Pending', 'In Progress'] } });
     const avgFeedback = await Feedback.aggregate([
@@ -58,7 +56,7 @@ const getStats = async (req, res) => {
       stats: {
         totalRooms, availableRooms, bookedRooms, cleaningRooms,
         totalBookings, activeBookings, completedBookings, totalRevenue,
-        totalGuests, pendingMaintenance, pendingHousekeeping, roomsToClean: cleaningRooms, pendingServices, averageRating,
+        totalGuests, pendingHousekeeping, roomsToClean: cleaningRooms, pendingServices, averageRating,
         recentBookings, roomsByType,
         ...guestStats
       }

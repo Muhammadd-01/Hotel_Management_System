@@ -2,10 +2,10 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  HiOutlineViewGrid, HiOutlineKey, HiOutlineCalendar, HiOutlineLightBulb,
+  HiOutlineViewGrid, HiOutlineKey, HiOutlineCalendar,
   HiOutlineLogout, HiOutlineUserAdd, HiOutlineUsers, HiOutlineDocumentText,
   HiOutlineCog, HiOutlineStar, HiOutlineBell, HiOutlineUserGroup, HiOutlineHome,
-  HiOutlinePlus, HiOutlineShieldCheck
+  HiOutlineShieldCheck
 } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import API from '../../services/api';
@@ -16,20 +16,11 @@ const Sidebar = () => {
   const { user, logout, isAdmin } = useAuth(); // Access auth state and functions
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const [unread, setUnread] = useState(0); // Track unread notifications count
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Toggle logout confirmation
 
   // ============ FETCH NOTIFICATION COUNT ============
   useEffect(() => {
-    const fetchNotifs = async () => {
-      try {
-        const res = await API.get('/notifications');
-        if (res.data.success) setUnread(res.data.unreadCount);
-      } catch (err) { /* silent fail */ }
-    };
-    fetchNotifs();
-    const interval = setInterval(fetchNotifs, 30000); // Auto-refresh every 30 seconds
-    return () => clearInterval(interval);
+    // Notifications feature removed
   }, []);
 
   // Logout handle karna
@@ -101,13 +92,6 @@ const Sidebar = () => {
             <HiOutlineCog className="nav-icon" /><span>Housekeeping</span>
           </NavLink>
         )}
-
-        {/* Maintenance & Admin & Manager */}
-        {(['superadmin', 'manager', 'maintenance'].includes(user?.role)) && (
-          <NavLink to="/maintenance" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            <HiOutlineCog className="nav-icon" /><span>Maintenance</span>
-          </NavLink>
-        )}
         
         {/* Universal Links */}
         <NavLink to="/services" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -119,16 +103,6 @@ const Sidebar = () => {
             <HiOutlineStar className="nav-icon" /><span>Guest Reviews</span>
           </NavLink>
         )}
-        
-        <NavLink to="/ai-assistant" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <HiOutlineLightBulb className="nav-icon" /><span>AI Assistant</span>
-        </NavLink>
-
-        <NavLink to="/notifications" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <HiOutlineBell className="nav-icon" />
-          <span>Notifications</span>
-          {unread > 0 && <span className="notif-badge">{unread}</span>}
-        </NavLink>
 
         {/* Management Links */}
         {(['superadmin', 'manager'].includes(user?.role)) && (
@@ -139,14 +113,8 @@ const Sidebar = () => {
                 <NavLink to="/staff" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                   <HiOutlineUserGroup className="nav-icon" /><span>Personnel Directory</span>
                 </NavLink>
-                <NavLink to="/create-user" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-                  <HiOutlineUserAdd className="nav-icon" /><span>Enroll Personnel</span>
-                </NavLink>
               </>
             )}
-            <NavLink to="/addons" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <HiOutlinePlus className="nav-icon" /><span>Service Catalog</span>
-            </NavLink>
             {user?.role === 'superadmin' && (
               <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                 <HiOutlineCog className="nav-icon" /><span>System Settings</span>

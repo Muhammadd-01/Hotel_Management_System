@@ -46,7 +46,7 @@ const Login = () => {
         addToast('Welcome Back', `Welcome back, ${data.user.name}.`, 'success');
         
         // Role based redirection
-        const staffRoles = ['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff'];
+        const staffRoles = ['superadmin', 'manager', 'receptionist', 'housekeeping', 'staff'];
         if (staffRoles.includes(data.user.role)) {
           navigate('/dashboard');
         } else {

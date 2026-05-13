@@ -20,7 +20,6 @@ const Guests = () => {
   const emptyForm = {
     firstName: '', lastName: '', email: '', phone: '', idNumber: '', idType: 'CNIC',
     address: '', city: '', country: 'Pakistan', isVIP: false, notes: '',
-    cnicFrontImage: '', cnicBackImage: '',
     preferences: { roomType: '', floorPreference: 'Any', specialRequests: '' }
   };
   const [form, setForm] = useState(emptyForm);
@@ -68,8 +67,7 @@ const Guests = () => {
         phone: guest.phone, idNumber: guest.idNumber || '', idType: guest.idType || 'CNIC',
         address: guest.address || '', city: guest.city || '', country: guest.country || 'Pakistan',
         isVIP: guest.isVIP || false, notes: guest.notes || '',
-        cnicFrontImage: guest.cnicFrontImage || '',
-        cnicBackImage: guest.cnicBackImage || '',
+        isVIP: guest.isVIP || false, notes: guest.notes || '',
         preferences: guest.preferences || { roomType: '', floorPreference: 'Any', specialRequests: '' }
       });
     } else { 
@@ -184,16 +182,7 @@ const Guests = () => {
                 <div className="form-group"><label>ID Number</label><input name="idNumber" value={form.idNumber} onChange={handleChange} placeholder="Identification Number" /></div>
               </div>
               
-              <div className="form-row">
-                <div className="form-group">
-                  <label>CNIC Front Image</label>
-                  <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'cnicFrontImage')} />
-                </div>
-                <div className="form-group">
-                  <label>CNIC Back Image</label>
-                  <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'cnicBackImage')} />
-                </div>
-              </div>
+
 
               <div className="form-row">
                 <div className="form-group"><label>City</label><input name="city" value={form.city} onChange={handleChange} /></div>
@@ -245,33 +234,11 @@ const Guests = () => {
                 </div>
               </div>
 
-              <div className="cnic-images-section">
-                <h4 style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <HiOutlineIdentification /> Verification Documents
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  <div className="cnic-img-box">
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>FRONT SIDE</p>
-                    <div style={{ height: '200px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {selectedGuest.cnicFrontImage ? (
-                        <img src={selectedGuest.cnicFrontImage} alt="CNIC Front" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No image uploaded</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="cnic-img-box">
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px' }}>BACK SIDE</p>
-                    <div style={{ height: '200px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {selectedGuest.cnicBackImage ? (
-                        <img src={selectedGuest.cnicBackImage} alt="CNIC Back" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No image uploaded</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
             </div>
           </div>
         </div>

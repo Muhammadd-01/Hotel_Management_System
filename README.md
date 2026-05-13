@@ -34,7 +34,7 @@ A full-stack MERN Hotel Management System with AI-powered Smart Booking Assistan
 - Supports English & Roman Urdu keywords
 
 ### ⚡ Enterprise Features (NEW)
-- **Real-time Notifications:** Instant updates for bookings, housekeeping, and maintenance via Socket.io.
+- **Real-time Notifications:** Instant updates for bookings and housekeeping via Socket.io.
 - **Dynamic Pricing:** Automatic price adjustments based on weekends and occupancy levels.
 - **PDF Invoice Export:** Professional invoice generation and download using jsPDF.
 - **Security Hardening:** Rate limiting, Helmet security headers, and NoSQL injection prevention.

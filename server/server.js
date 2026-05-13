@@ -70,14 +70,8 @@ app.use('/api/addons', require('./routes/addonRoutes'));
 // Housekeeping tasks
 app.use('/api/housekeeping', require('./routes/housekeepingRoutes'));
 
-// Maintenance requests
-app.use('/api/maintenance', require('./routes/maintenanceRoutes'));
-
 // Feedback aur ratings
 app.use('/api/feedback', require('./routes/feedbackRoutes'));
-
-// System notifications
-app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // Staff management (Admin only)
 app.use('/api/staff', require('./routes/staffRoutes'));

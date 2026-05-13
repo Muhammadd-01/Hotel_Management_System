@@ -6,7 +6,6 @@ const Room = require('./models/Room');
 const Guest = require('./models/Guest');
 const Booking = require('./models/Booking');
 const Feedback = require('./models/Feedback');
-const Maintenance = require('./models/Maintenance');
 const Housekeeping = require('./models/Housekeeping');
 
 dotenv.config();
@@ -23,7 +22,6 @@ const seedData = async () => {
     await Guest.deleteMany();
     await Booking.deleteMany();
     await Feedback.deleteMany();
-    await Maintenance.deleteMany();
     await Housekeeping.deleteMany();
     console.log('🗑️ Purana data clear ho gaya');
 
@@ -107,17 +105,6 @@ const seedData = async () => {
       status: 'Reviewed'
     });
     console.log('⭐ Sample feedback create ho gaya');
-
-    // 6. Maintenance Request create karo
-    await Maintenance.create({
-      room: rooms[1]._id,
-      title: 'AC Issue',
-      description: 'AC cooling nahi kar raha sahi se.',
-      priority: 'High',
-      status: 'Reported',
-      reportedBy: staff._id
-    });
-    console.log('🔧 Sample maintenance request create ho gayi');
 
     console.log('\n✅ Database seed complete!');
     process.exit();

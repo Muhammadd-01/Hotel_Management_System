@@ -18,14 +18,9 @@ const AdminGuests = lazy(() => import('./admin/pages/Guests'));
 const AdminInvoices = lazy(() => import('./admin/pages/Invoices'));
 const AdminServices = lazy(() => import('./admin/pages/Services'));
 const AdminHousekeeping = lazy(() => import('./admin/pages/Housekeeping'));
-const AdminMaintenance = lazy(() => import('./admin/pages/Maintenance'));
 const AdminFeedback = lazy(() => import('./admin/pages/Feedback'));
-const AdminAIAssistant = lazy(() => import('./admin/pages/AIAssistant'));
-const AdminNotifications = lazy(() => import('./admin/pages/Notifications'));
 const AdminStaffManagement = lazy(() => import('./admin/pages/StaffManagement'));
-const AdminCreateUser = lazy(() => import('./admin/pages/CreateUser'));
 const AdminSettings = lazy(() => import('./admin/pages/Settings'));
-const AdminAddons = lazy(() => import('./admin/pages/Addons'));
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
 const AdminRegister = lazy(() => import('./admin/pages/Register'));
 
@@ -78,20 +73,15 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* ====== ADMIN / MANAGEMENT PANEL ROUTES ====== */}
-          <Route path="/dashboard" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminDashboard /></AdminPage>} />
+          <Route path="/dashboard" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'guest']}><AdminDashboard /></AdminPage>} />
           <Route path="/rooms" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminRooms /></AdminPage>} />
           <Route path="/bookings" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminBookings /></AdminPage>} />
           <Route path="/guests" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminGuests /></AdminPage>} />
           <Route path="/invoices" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist']}><AdminInvoices /></AdminPage>} />
-          <Route path="/services" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminServices /></AdminPage>} />
+          <Route path="/services" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'guest']}><AdminServices /></AdminPage>} />
           <Route path="/housekeeping" element={<AdminPage allowedRoles={['superadmin', 'manager', 'housekeeping']}><AdminHousekeeping /></AdminPage>} />
-          <Route path="/maintenance" element={<AdminPage allowedRoles={['superadmin', 'manager', 'maintenance']}><AdminMaintenance /></AdminPage>} />
           <Route path="/feedback" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminFeedback /></AdminPage>} />
-          <Route path="/ai-assistant" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'guest']}><AdminAIAssistant /></AdminPage>} />
-          <Route path="/notifications" element={<AdminPage allowedRoles={['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'guest']}><AdminNotifications /></AdminPage>} />
           <Route path="/staff" element={<AdminPage allowedRoles={['superadmin']}><AdminStaffManagement /></AdminPage>} />
-          <Route path="/create-user" element={<AdminPage allowedRoles={['superadmin']}><AdminCreateUser /></AdminPage>} />
-          <Route path="/addons" element={<AdminPage allowedRoles={['superadmin', 'manager']}><AdminAddons /></AdminPage>} />
           <Route path="/settings" element={<AdminPage allowedRoles={['superadmin']}><AdminSettings /></AdminPage>} />
 
           {/* Fallback */}

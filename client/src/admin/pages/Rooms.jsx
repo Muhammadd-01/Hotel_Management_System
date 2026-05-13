@@ -172,7 +172,6 @@ const Rooms = () => {
                   <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
                     <option value="Available">Available for Guest</option>
                     <option value="Cleaning">In Housekeeping Queue</option>
-                    <option value="Maintenance">Under Technical Maintenance</option>
                   </select>
                 </div>
               </div>

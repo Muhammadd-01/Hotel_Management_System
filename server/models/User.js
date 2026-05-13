@@ -35,21 +35,11 @@ const userSchema = new mongoose.Schema({
   // Role-Based Access Control
   role: {
     type: String,
-    enum: ['superadmin', 'manager', 'receptionist', 'housekeeping', 'maintenance', 'staff', 'guest'],
+    enum: ['superadmin', 'manager', 'receptionist', 'housekeeping', 'staff', 'guest'],
     default: 'guest'
   },
 
-  // Identity Verification (CNIC Details)
-  cnicNumber: {
-    type: String,
-    trim: true
-  },
-  cnicFrontImage: {
-    type: String // Stores Base64 string or image URL
-  },
-  cnicBackImage: {
-    type: String // Stores Base64 string or image URL
-  },
+
   profileImage: {
     type: String // Optional profile picture
   }

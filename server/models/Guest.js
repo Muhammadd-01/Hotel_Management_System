@@ -37,12 +37,7 @@ const guestSchema = new mongoose.Schema({
     enum: ['CNIC', 'Passport', 'Driving License', 'Other'],
     default: 'CNIC'
   },
-  cnicFrontImage: {
-    type: String // Base64 or URL
-  },
-  cnicBackImage: {
-    type: String // Base64 or URL
-  },
+
 
   // Geography
   address: String,

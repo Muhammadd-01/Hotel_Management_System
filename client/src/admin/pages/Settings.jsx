@@ -51,7 +51,7 @@ const Settings = () => {
       {success && <div className="alert alert-success">{success}</div>}
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div className="card" style={{maxWidth: '800px'}}>
+      <div className="card" style={{maxWidth: '800px', margin: '0 auto'}}>
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <div className="form-group">

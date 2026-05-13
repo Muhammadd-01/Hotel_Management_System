@@ -165,9 +165,6 @@ const getMe = async (req, res) => {
         role: user.role,
         phone: user.phone,
         address: user.address,
-        cnicNumber: user.cnicNumber,
-        cnicFrontImage: user.cnicFrontImage,
-        cnicBackImage: user.cnicBackImage,
         profileImage: user.profileImage
       }
     });
@@ -183,7 +180,7 @@ const getMe = async (req, res) => {
 // PUT /api/auth/update-profile - allows users to update their personal details
 const updateProfile = async (req, res) => {
   try {
-    const { name, phone, address, cnicNumber, cnicFrontImage, cnicBackImage, profileImage, password } = req.body;
+    const { name, phone, address, profileImage, password } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -195,9 +192,6 @@ const updateProfile = async (req, res) => {
     if (name) user.name = name;
     if (phone) user.phone = phone;
     if (address) user.address = address;
-    if (cnicNumber) user.cnicNumber = cnicNumber;
-    if (cnicFrontImage) user.cnicFrontImage = cnicFrontImage;
-    if (cnicBackImage) user.cnicBackImage = cnicBackImage;
     if (profileImage) user.profileImage = profileImage;
 
     // Handle password update if provided
@@ -217,7 +211,6 @@ const updateProfile = async (req, res) => {
         role: user.role,
         phone: user.phone,
         address: user.address,
-        cnicNumber: user.cnicNumber,
         profileImage: user.profileImage
       }
     });

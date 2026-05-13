@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
 import { HiOutlineCash, HiOutlineUsers, HiOutlineTrendingUp, HiOutlineStar } from 'react-icons/hi';
 
 const CHART_COLORS = ['#00D1FF', '#10B981', '#F59E0B', '#8B5CF6'];
@@ -115,11 +115,7 @@ const ManagerDashboard = ({ stats }) => {
             
             <div className="nav-divider" style={{ background: 'var(--border)', margin: '12px 0' }}></div>
             
-            <div className="grid-3" style={{ gap: '10px' }}>
-              <div className="operation-item" style={{ padding: '12px' }}>
-                <h4 style={{ fontSize: '1.2rem' }}>{stats?.pendingMaintenance || 0}</h4>
-                <p style={{ fontSize: '0.7rem' }}>Issues</p>
-              </div>
+            <div className="grid-2" style={{ gap: '10px', display: 'grid' }}>
               <div className="operation-item" style={{ padding: '12px' }}>
                 <h4 style={{ fontSize: '1.2rem' }}>{stats?.pendingHousekeeping || 0}</h4>
                 <p style={{ fontSize: '0.7rem' }}>Tasks</p>
