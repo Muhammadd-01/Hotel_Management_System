@@ -237,11 +237,6 @@ const Guests = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
-            </div>
-          </div>
-        </div>
       )}
 
       {/* Delete Confirmation Modal */}
